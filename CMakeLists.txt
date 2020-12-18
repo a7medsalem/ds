@@ -1,8 +1,8 @@
 #1 define minimum version
-cmake_minimum_required(3.0.0)
+cmake_minimum_required(VERSION 3.0.0)
 
 #2 define project
-project(dc++ VERSION 1.0.0)
+project(ds++ VERSION 1.0.0)
 
 #. declear some variables
 set(CMAKE_BUILD_TYPE Debug)
