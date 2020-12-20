@@ -9,8 +9,9 @@
 #ifndef _ARRAY_LIST_H
 #define _ARRAY_LIST_H
 
-#include <exception>
+#include <vector>
 #include "global.h"
+#include "exception.h"
 
 namespace ds
 {
@@ -27,7 +28,7 @@ namespace ds
         // construct array with size of 3
         ArrayList<T>();
         ArrayList<T>(INT);
-        ArrayList<T>(ArrayList&);
+        ArrayList<T>(const ArrayList<T>&);
         ~ArrayList();
     public:
         BOOLEAN add(T);
@@ -62,6 +63,9 @@ ds::ArrayList<T>::ArrayList()
 template<typename T>
 ds::ArrayList<T>::ArrayList(INT size)
 {
+    if(size < 0) 
+        throw ds::exception("NEGATIVE_ARRAY_SIZE_NOT_ALLOWED");
+
     this->_size  = size;
     this->_count = 0;
     this->_array = new T[this->_size];
@@ -69,7 +73,7 @@ ds::ArrayList<T>::ArrayList(INT size)
 
 
 template<typename T>
-ds::ArrayList<T>::ArrayList(ArrayList& list)
+ds::ArrayList<T>::ArrayList(const ArrayList<T>& list)
 {
     this->_size  = list._size;
     this->_count = list._count;
@@ -120,6 +124,7 @@ BOOLEAN ds::ArrayList<T>::add(T item)
     }
 
     this->_array[this->_count++] = item;
+    return TRUE;
 }
 
 
@@ -138,12 +143,12 @@ BOOLEAN ds::ArrayList<T>::exists(T item)
 template<typename T>
 void ds::ArrayList<T>::shiftElements(INT atIndex, INT shift)
 {
-    INT max = this->count - shift;  // count after shift
-    INT shifted = atIndex + shift;  // start shifted index
+    INT count = this->_count - atIndex - shift;  // count till end
+    INT shifted = atIndex + shift;               // start shifted index
 
-    for (INT i = atIndex; i < max; i++)
+    for (INT i = 0; i < count; i++)
     {
-        this->_array[atIndex] = this->_array[shifted + i];
+        this->_array[atIndex + i] = this->_array[shifted + i];
     }
 }
 
@@ -151,7 +156,7 @@ void ds::ArrayList<T>::shiftElements(INT atIndex, INT shift)
 template<typename T>
 BOOLEAN ds::ArrayList<T>::remove(T item)
 {
-    for (INT i = 0; i < this>_count; i++)
+    for (INT i = 0; i < this->_count; i++)
     {
         if(this->_array[i] == item)
         {
@@ -168,6 +173,7 @@ BOOLEAN ds::ArrayList<T>::remove(T item)
 template<typename T>
 BOOLEAN ds::ArrayList<T>::removeAt(INT index)
 {
+    if(index < 0) throw ds::negativeIndexNotAllowedException();
     if(index >= this->_count) return FALSE;
     
     this->shiftElements(index);
@@ -179,8 +185,8 @@ BOOLEAN ds::ArrayList<T>::removeAt(INT index)
 template<typename T>
 T ds::ArrayList<T>::get(INT index)
 {
-    if(index >= this->_count)
-        throw std::exception("OUT_OF_RANGE_EXCEPTION");
+    if(index < 0) throw ds::negativeIndexNotAllowedException();
+    if(index >= this->_count) throw ds::exception("OUT_OF_RANGE_EXCEPTION");
     
     return this->_array[index];
 }
