@@ -1,5 +1,5 @@
-#ifndef _EXCEPTION_H
-#define _EXCEPTION_H
+#ifndef _EXCEPTION_H_
+#define _EXCEPTION_H_
 
 #include <string>
 #include <exception>
@@ -16,12 +16,25 @@ namespace ds
     };
 
 
+
     class negativeIndexNotAllowedException : public ds::exception
     {
     public:
         negativeIndexNotAllowedException();
     };
+
+    class outOfRangeException : public ds::exception
+    {
+    public:
+        outOfRangeException();
+    };
+
+    class emptyCollectionException : public ds::exception
+    {
+    public:
+        emptyCollectionException();
+    };
 }
 
 
-#endif // !_EXCEPTION_H
+#endif // !_EXCEPTION_H_

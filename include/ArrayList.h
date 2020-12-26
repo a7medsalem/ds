@@ -6,22 +6,24 @@
 /*                                          */
 /********************************************/
 
-#ifndef _ARRAY_LIST_H
-#define _ARRAY_LIST_H
+#ifndef _ARRAY_LIST_H_
+#define _ARRAY_LIST_H_
 
 #include <vector>
+#include <string>
 #include "global.h"
 #include "exception.h"
+#include "IString.h"
 
 namespace ds
 {
     template<typename T>
-    class ArrayList
+    class ArrayList : public ds::IString
     {
     private:
-        INT _size;
-        INT _count;
-        T* _array;
+        INT size_;
+        INT count_;
+        T* array_;
     private:
         void shiftElements(INT, INT = 1);
     public:
@@ -39,6 +41,9 @@ namespace ds
 
         INT getSize();
         INT getCount();
+        std::string toString() override;
+
+        T& operator[](INT);
     };
 }
 
@@ -54,9 +59,9 @@ namespace ds
 template<typename T>
 ds::ArrayList<T>::ArrayList()
 {
-    this->_size  = 3;
-    this->_count = 0;
-    this->_array = new T[this->_size];
+    this->size_  = 3;
+    this->count_ = 0;
+    this->array_ = new T[this->size_];
 }
 
 
@@ -66,22 +71,22 @@ ds::ArrayList<T>::ArrayList(INT size)
     if(size < 0) 
         throw ds::exception("NEGATIVE_ARRAY_SIZE_NOT_ALLOWED");
 
-    this->_size  = size;
-    this->_count = 0;
-    this->_array = new T[this->_size];
+    this->size_  = size;
+    this->count_ = 0;
+    this->array_ = new T[this->size_];
 }
 
 
 template<typename T>
 ds::ArrayList<T>::ArrayList(const ArrayList<T>& list)
 {
-    this->_size  = list._size;
-    this->_count = list._count;
-    this->_array = new T[this->_size];
+    this->size_  = list.size_;
+    this->count_ = list.count_;
+    this->array_ = new T[this->size_];
 
-    for (INT i = 0; i < this->_count; i++)
+    for (INT i = 0; i < this->count_; i++)
     {
-        this->_array[i] = list._array[i];
+        this->array_[i] = list.array_[i];
     }
 }
 
@@ -89,31 +94,31 @@ ds::ArrayList<T>::ArrayList(const ArrayList<T>& list)
 template<typename T>
 ds::ArrayList<T>::~ArrayList()
 {
-    delete[] _array;
+    delete[] array_;
 }
 
 
 template<typename T>
 BOOLEAN ds::ArrayList<T>::add(T item)
 {
-    if(this->_count == this->_size)
+    if(this->count_ == this->size_)
     {
-        if(this->_size < INT32_MAX)
+        if(this->size_ < INT32_MAX)
         {
             // increase array size
-            INT increase = this->_size / 10;
+            INT increase = this->size_ / 10;
             increase = increase > 10 ? increase : 10;
 
-            this->_size += increase;                        // add increase to size
-            if(this->_size < 0) this->_size = INT32_MAX;    // check for overflow
+            this->size_ += increase;                        // add increase to size
+            if(this->size_ < 0) this->size_ = INT32_MAX;    // check for overflow
 
-            T *temp = this->_array;
-            this->_array = new T[this->_size];
+            T *temp = this->array_;
+            this->array_ = new T[this->size_];
 
             // copy elements from old array to new one
-            for (INT i = 0; i < this->_count; i++)
+            for (INT i = 0; i < this->count_; i++)
             {
-                this->_array[i] = temp[i];
+                this->array_[i] = temp[i];
             }
             delete[] temp;
         }
@@ -123,7 +128,7 @@ BOOLEAN ds::ArrayList<T>::add(T item)
         }
     }
 
-    this->_array[this->_count++] = item;
+    this->array_[this->count_++] = item;
     return TRUE;
 }
 
@@ -131,9 +136,9 @@ BOOLEAN ds::ArrayList<T>::add(T item)
 template<typename T>
 BOOLEAN ds::ArrayList<T>::exists(T item)
 {
-    for (INT i = 0; i < this->_count; i++)
+    for (INT i = 0; i < this->count_; i++)
     {
-        if(this->_array[i] == item)
+        if(this->array_[i] == item)
             return TRUE;
     }
     return FALSE;
@@ -143,12 +148,12 @@ BOOLEAN ds::ArrayList<T>::exists(T item)
 template<typename T>
 void ds::ArrayList<T>::shiftElements(INT atIndex, INT shift)
 {
-    INT count = this->_count - atIndex - shift;  // count till end
+    INT count = this->count_ - atIndex - shift;  // count till end
     INT shifted = atIndex + shift;               // start shifted index
 
     for (INT i = 0; i < count; i++)
     {
-        this->_array[atIndex + i] = this->_array[shifted + i];
+        this->array_[atIndex + i] = this->array_[shifted + i];
     }
 }
 
@@ -156,12 +161,12 @@ void ds::ArrayList<T>::shiftElements(INT atIndex, INT shift)
 template<typename T>
 BOOLEAN ds::ArrayList<T>::remove(T item)
 {
-    for (INT i = 0; i < this->_count; i++)
+    for (INT i = 0; i < this->count_; i++)
     {
-        if(this->_array[i] == item)
+        if(this->array_[i] == item)
         {
             this->shiftElements(i);
-            this->_count--;
+            this->count_--;
             return TRUE;
         }
     }
@@ -174,10 +179,10 @@ template<typename T>
 BOOLEAN ds::ArrayList<T>::removeAt(INT index)
 {
     if(index < 0) throw ds::negativeIndexNotAllowedException();
-    if(index >= this->_count) return FALSE;
+    if(index >= this->count_) return FALSE;
     
     this->shiftElements(index);
-    this->_count--;
+    this->count_--;
     return TRUE;
 }
 
@@ -186,24 +191,39 @@ template<typename T>
 T ds::ArrayList<T>::get(INT index)
 {
     if(index < 0) throw ds::negativeIndexNotAllowedException();
-    if(index >= this->_count) throw ds::exception("OUT_OF_RANGE_EXCEPTION");
+    if(index >= this->count_) throw ds::outOfRangeException();
     
-    return this->_array[index];
+    return this->array_[index];
 }
 
 
 template<typename T>
 INT ds::ArrayList<T>::getCount()
 {
-    return this->_count;
+    return this->count_;
 }
 
 
 template<typename T>
 INT ds::ArrayList<T>::getSize()
 {
-    return this->_size;
+    return this->size_;
 }
 
 
-#endif // !_ARRAY_LIST_H
+template<typename T>
+std::string ds::ArrayList<T>::toString()
+{
+    return "ArrayList of " + std::to_string(this->count_) + " elements, with size of " + std::to_string(this->size_);
+}
+
+template<typename T>
+T& ds::ArrayList<T>::operator[](INT index)
+{
+    if(index < 0) throw ds::negativeIndexNotAllowedException();
+    if(index >= this->count_) throw ds::outOfRangeException();
+
+    return this->array_[index];
+}
+
+#endif // !_ARRAY_LIST_H_

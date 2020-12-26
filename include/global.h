@@ -1,3 +1,8 @@
+#ifndef NDEBUG
+    #define DEBUG
+    #define _DEBUG_
+#endif
+
 #include <stdint.h>
 #ifndef _G_TYPES_
     #define _G_TYPES_

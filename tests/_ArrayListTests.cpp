@@ -179,3 +179,30 @@ TEST(_ArrayListTests, remove_at_out_of_index)
     EXPECT_EQ(FALSE, list.removeAt(0));
     EXPECT_EQ(FALSE, list.removeAt(+1));
 }
+
+
+TEST(_ArrayListTests, get_using_indexer)
+{
+    ds::ArrayList<INT> list;
+    for (INT i = 0; i < 100; i++)
+    {
+        list.add(i);
+    }
+    
+    EXPECT_EQ(00, list[0]);
+    EXPECT_EQ(99, list[99]);
+}
+
+TEST(_ArrayListTests, modify_value_using_indexer)
+{
+    ds::ArrayList<INT> list;
+    for (INT i = 0; i < 100; i++)
+    {
+        list.add(i);
+    }
+    
+    list[0] = 100;
+    list[99] = 0;
+    EXPECT_EQ(100, list[0]);
+    EXPECT_EQ(000, list[99]);
+}
