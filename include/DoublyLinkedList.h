@@ -9,39 +9,42 @@
 namespace ds
 {
     template<typename T>
-    class LinkedListNode
+    class DoublyLinkedListNode
     {
     private:
         T value_;
-        LinkedListNode *next_;
+        DoublyLinkedListNode *prev_;
+        DoublyLinkedListNode *next_;
     public:
-        LinkedListNode<T>(T);
-        ~LinkedListNode<T>();
+        DoublyLinkedListNode<T>(T);
+        ~DoublyLinkedListNode<T>();
     public:
         //
         T& getValue();
         void setValue(T);
         //
-        LinkedListNode* getNext();
-        void setNext(LinkedListNode*);
+        DoublyLinkedListNode* getNext();
+        void setNext(DoublyLinkedListNode*);
+        DoublyLinkedListNode* getPrev();
+        void setPrev(DoublyLinkedListNode*);
     };
 
 
     template<typename T>
-    class LinkedList
+    class DoublyLinkedList
     {
     private:
         INT count_;
-        LinkedListNode<T> *head_;
-        LinkedListNode<T> *tail_;
+        DoublyLinkedListNode<T> *head_;
+        DoublyLinkedListNode<T> *tail_;
     private:
-        ds::LinkedListNode<T>* getNode(INT);
-        ds::LinkedListNode<T>* getHeadNode();
-        ds::LinkedListNode<T>* getTailNode();
+        ds::DoublyLinkedListNode<T>* getNode(INT);
+        ds::DoublyLinkedListNode<T>* getHeadNode();
+        ds::DoublyLinkedListNode<T>* getTailNode();
     public:
-        LinkedList<T>();
-        LinkedList<T>(ArrayList<T>&);
-        ~LinkedList<T>();
+        DoublyLinkedList<T>();
+        DoublyLinkedList<T>(ArrayList<T>&);
+        ~DoublyLinkedList<T>();
     public:
         BOOLEAN insert(T);
         BOOLEAN add(T);
@@ -61,53 +64,78 @@ namespace ds
 
 }
 
+
+
 /********************************************/
 /*                                          */
-/*             implementaions               */
+/*          DoublyLinkedListNode            */
 /*                                          */
 /********************************************/
 
 template<typename T>
-ds::LinkedListNode<T>::LinkedListNode(T value)
+ds::DoublyLinkedListNode<T>::DoublyLinkedListNode(T value)
 {
     this->next_ = NULL;
+    this->prev_ = NULL;
     this->value_ = value;
 }
 
 template<typename T>
-ds::LinkedListNode<T>::~LinkedListNode()
+ds::DoublyLinkedListNode<T>::~DoublyLinkedListNode()
 {
     // nothing to destruct
 }
 
 template<typename T>
-void ds::LinkedListNode<T>::setNext(LinkedListNode<T> *nextNode)
+void ds::DoublyLinkedListNode<T>::setNext(DoublyLinkedListNode<T> *nextNode)
 {
     this->next_ = nextNode;
 }
 
 template<typename T>
-ds::LinkedListNode<T>* ds::LinkedListNode<T>::getNext()
+ds::DoublyLinkedListNode<T>* ds::DoublyLinkedListNode<T>::getPrev()
+{
+    return this->prev_;
+}
+
+template<typename T>
+void ds::DoublyLinkedListNode<T>::setPrev(DoublyLinkedListNode<T> *prevNode)
+{
+    this->prev_ = prevNode;
+}
+
+template<typename T>
+ds::DoublyLinkedListNode<T>* ds::DoublyLinkedListNode<T>::getNext()
 {
     return this->next_;
 }
 
 template<typename T>
-void ds::LinkedListNode<T>::setValue(T value)
+void ds::DoublyLinkedListNode<T>::setValue(T value)
 {
     this->value_ = value;
 }
 
 template<typename T>
-T& ds::LinkedListNode<T>::getValue()
+T& ds::DoublyLinkedListNode<T>::getValue()
 {
     return this->value_;
 }
 
 
 
+
+
+
+/********************************************/
+/*                                          */
+/*            DoublyLinkedList              */
+/*                                          */
+/********************************************/
+
+
 template<typename T>
-ds::LinkedList<T>::LinkedList()
+ds::DoublyLinkedList<T>::DoublyLinkedList()
 {
     this->count_ = 0;
     this->head_ = NULL;
@@ -115,22 +143,22 @@ ds::LinkedList<T>::LinkedList()
 }
 
 template<typename T>
-ds::LinkedList<T>::~LinkedList()
+ds::DoublyLinkedList<T>::~DoublyLinkedList()
 {
     while (this->head_)
     {
-        ds::LinkedListNode<T> *temp = this->head_;
+        ds::DoublyLinkedListNode<T> *temp = this->head_;
         this->head_ = this->head_->getNext();
         delete temp;
     }
 }
 
 template<typename T>
-BOOLEAN ds::LinkedList<T>::add(T value)
+BOOLEAN ds::DoublyLinkedList<T>::add(T value)
 {
     if(this->count_ == INT32_MAX) return FALSE;
     
-    ds::LinkedListNode<T> *node = new ds::LinkedListNode<T>(value);
+    ds::DoublyLinkedListNode<T> *node = new ds::DoublyLinkedListNode<T>(value);
     if(!this->head_)
     {
         this->head_ = node;
@@ -138,6 +166,7 @@ BOOLEAN ds::LinkedList<T>::add(T value)
     }
     else
     {
+        node->setPrev(this->tail_);
         this->tail_->setNext(node);
         this->tail_ = node;
     }
@@ -147,11 +176,11 @@ BOOLEAN ds::LinkedList<T>::add(T value)
 }
 
 template<typename T>
-BOOLEAN ds::LinkedList<T>::insert(T value)
+BOOLEAN ds::DoublyLinkedList<T>::insert(T value)
 {
     if(this->count_ == INT32_MAX) return FALSE;
     
-    ds::LinkedListNode<T> *node = new ds::LinkedListNode<T>(value);
+    ds::DoublyLinkedListNode<T> *node = new ds::DoublyLinkedListNode<T>(value);
     if(!this->head_)
     {
         this->head_ = node;
@@ -160,6 +189,7 @@ BOOLEAN ds::LinkedList<T>::insert(T value)
     else
     {
         node->setNext(this->head_);
+        this->head_->setPrev(node);
         this->head_ = node;
     }
     
@@ -168,7 +198,7 @@ BOOLEAN ds::LinkedList<T>::insert(T value)
 }
 
 template<typename T>
-ds::LinkedListNode<T>* ds::LinkedList<T>::getNode(INT index)
+ds::DoublyLinkedListNode<T>* ds::DoublyLinkedList<T>::getNode(INT index)
 {
     if(index < 0) throw ds::negativeIndexNotAllowedException();
     if(index >= this->count_) throw ds::outOfRangeException();
@@ -176,49 +206,56 @@ ds::LinkedListNode<T>* ds::LinkedList<T>::getNode(INT index)
     if(index == 0) return this->head_;
     if(index == this->count_ - 1) return this->tail_;
 
-    INT counter = 0;
-    ds::LinkedListNode<T> *current = this->head_;
-    while (counter != index)
+    INT counter;
+    ds::DoublyLinkedListNode<T> *current = NULL;
+    if(index < 0.5 * this->count_)
     {
-        current = current->getNext();
-        counter++;
+        counter = 0;
+        current = this->head_;
+        while (counter != index)
+        {
+            current = current->getNext();
+            counter++;
+        }
+    }
+    else
+    {
+        counter = this->count_ - 1;
+        current = this->tail_;
+        while (counter != index)
+        {
+            current = current->getPrev();
+            counter--;
+        }
     }
     
     return current;
 }
 
 template<typename T>
-ds::LinkedListNode<T>* ds::LinkedList<T>::getHeadNode()
+ds::DoublyLinkedListNode<T>* ds::DoublyLinkedList<T>::getHeadNode()
 {
     return this->head_;
 }
 
 template<typename T>
-ds::LinkedListNode<T>* ds::LinkedList<T>::getTailNode()
+ds::DoublyLinkedListNode<T>* ds::DoublyLinkedList<T>::getTailNode()
 {
     return this->tail_;
 }
 
 template<typename T>
-BOOLEAN ds::LinkedList<T>::removeAt(INT index)
+BOOLEAN ds::DoublyLinkedList<T>::removeAt(INT index)
 {
-        
     if(index < 0) throw ds::negativeIndexNotAllowedException();
     if(index >= this->count_) throw ds::outOfRangeException();
 
     if(index == 0) return this->removeHead();
     if(index == this->count_ - 1) return this->removeTail();
 
-    INT counter = 0;
-    ds::LinkedListNode<T> *prev = this->head_;
-    while (counter != index - 1)
-    {
-        prev = prev->getNext();
-        counter++;
-    }
-    
-    ds::LinkedListNode<T>* target = prev->getNext();
-    prev->setNext(target->getNext());
+    ds::DoublyLinkedListNode<T> *target = this->getNode(index);
+    target->getPrev()->setNext(target->getNext());
+    target->getNext()->setPrev(target->getPrev());
     
     this->count_--;
     delete target;
@@ -226,12 +263,13 @@ BOOLEAN ds::LinkedList<T>::removeAt(INT index)
 }
 
 template<typename T>
-BOOLEAN ds::LinkedList<T>::removeHead()
+BOOLEAN ds::DoublyLinkedList<T>::removeHead()
 {
     if(!this->head_) return FALSE;
 
-    ds::LinkedListNode<T>* temp = this->head_;
-    this->head_ = this->head_->getNext();
+    ds::DoublyLinkedListNode<T>* temp = this->head_;
+    this->head_ = this->head_->getNext();               
+    if(this->head_) this->head_->setPrev(NULL);         // in-case of on node head will be null
     delete temp;
 
     this->count_--;
@@ -240,62 +278,54 @@ BOOLEAN ds::LinkedList<T>::removeHead()
 }
 
 template<typename T>
-BOOLEAN ds::LinkedList<T>::removeTail()
+BOOLEAN ds::DoublyLinkedList<T>::removeTail()
 {
     if(!this->tail_) return FALSE;
     
-    ds::LinkedListNode<T>* current = NULL;
-    if(this->count_ > 1)
-    {
-        current = this->head_;
-        while (current->getNext() != this->tail_)
-        {
-            current = current->getNext();
-        }
-        current->setNext(NULL);
-    }
-    
+    ds::DoublyLinkedListNode<T>* oldTail = this->tail_;
+    this->tail_ = this->tail_->getPrev();
+    if(this->tail_) this->tail_->setNext(NULL);
+
     this->count_--;
-    delete this->tail_;
-    this->tail_ = current;
+    delete oldTail;
     if(this->count_ == 0) this->tail_ = this->head_ = NULL;
     return TRUE;
 }
 
 template<typename T>
-T& ds::LinkedList<T>::get(INT index)
+T& ds::DoublyLinkedList<T>::get(INT index)
 {
     return this->getNode(index)->getValue();
 }
 
 template<typename T>
-T& ds::LinkedList<T>::getHead()
+T& ds::DoublyLinkedList<T>::getHead()
 {
     if(!this->head_) throw ds::emptyCollectionException();
     return this->head_->getValue();
 }
 
 template<typename T>
-T& ds::LinkedList<T>::getTail()
+T& ds::DoublyLinkedList<T>::getTail()
 {
     if(!this->tail_) throw ds::emptyCollectionException();
     return this->tail_->getValue();
 }
 
 template<typename T>
-void ds::LinkedList<T>::set(INT index, T value)
+void ds::DoublyLinkedList<T>::set(INT index, T value)
 {
     this->getNode(index)->setValue(value);
 }
 
 template<typename T>
-void ds::LinkedList<T>::reverse()
+void ds::DoublyLinkedList<T>::reverse()
 {
     if(!this->head_) return;
 
-    ds::LinkedListNode<T>* current = this->head_;
-    ds::LinkedListNode<T>* next = NULL;
-    ds::LinkedListNode<T>* prev = NULL;
+    ds::DoublyLinkedListNode<T>* current = this->head_;
+    ds::DoublyLinkedListNode<T>* next = NULL;
+    ds::DoublyLinkedListNode<T>* prev = NULL;
 
     while (current)
     {
@@ -303,6 +333,7 @@ void ds::LinkedList<T>::reverse()
         next = current->getNext();
         // set current next as previous one
         current->setNext(prev);
+        current->setPrev(next);
 
         prev    = current;
         current = next;
@@ -313,14 +344,14 @@ void ds::LinkedList<T>::reverse()
 }
 
 template<typename T>
-INT ds::LinkedList<T>::getCount()
+INT ds::DoublyLinkedList<T>::getCount()
 {
     return this->count_;
 }
 
 
 template<typename T>
-T& ds::LinkedList<T>::operator[](INT index)
+T& ds::DoublyLinkedList<T>::operator[](INT index)
 {
     return this->get(index);
 }

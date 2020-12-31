@@ -11,6 +11,7 @@
 
 #include <vector>
 #include <string>
+#include <cmath>
 #include "global.h"
 #include "exception.h"
 #include "IString.h"
@@ -21,6 +22,8 @@ namespace ds
     class ArrayList : public ds::IString
     {
     private:
+        INT factor_;
+        INT maxSize_;
         INT size_;
         INT count_;
         T* array_;
@@ -37,12 +40,14 @@ namespace ds
         BOOLEAN exists(T);
         BOOLEAN remove(T);
         BOOLEAN removeAt(INT);
-        T get(INT);
+        T& get(INT);
 
+        T* toArray() const;
         INT getSize();
         INT getCount();
         std::string toString() override;
 
+        //void setReallocationFactors(INT, FLOAT);
         T& operator[](INT);
     };
 }
@@ -56,11 +61,24 @@ namespace ds
 /********************************************/
 
 
+
+template<typename T>
+T* ds::ArrayList<T>::toArray() const
+{
+    T* result = new T[this->count_];
+    memcpy(result, this->array_, this->count_ * sizeof(T));
+    
+    return result;
+}
+
 template<typename T>
 ds::ArrayList<T>::ArrayList()
 {
-    this->size_  = 3;
-    this->count_ = 0;
+    this->maxSize_  = INT32_MAX;
+    this->factor_   = 2;
+    this->size_     = 3;
+    this->count_    = 0;
+
     this->array_ = new T[this->size_];
 }
 
@@ -71,8 +89,11 @@ ds::ArrayList<T>::ArrayList(INT size)
     if(size < 0) 
         throw ds::exception("NEGATIVE_ARRAY_SIZE_NOT_ALLOWED");
 
-    this->size_  = size;
-    this->count_ = 0;
+    this->maxSize_  = INT32_MAX;
+    this->factor_   = 2;
+    this->size_     = size;
+    this->count_    = 0;
+
     this->array_ = new T[this->size_];
 }
 
@@ -80,21 +101,20 @@ ds::ArrayList<T>::ArrayList(INT size)
 template<typename T>
 ds::ArrayList<T>::ArrayList(const ArrayList<T>& list)
 {
-    this->size_  = list.size_;
-    this->count_ = list.count_;
-    this->array_ = new T[this->size_];
+    this->maxSize_  = list.maxSize_;
+    this->factor_   = list.factor_;
+    this->size_     = list.size_;
+    this->count_    = list.count_;
 
-    for (INT i = 0; i < this->count_; i++)
-    {
-        this->array_[i] = list.array_[i];
-    }
+    this->array_ = new T[this->size_];
+    memcpy(this->array_, list.array_, this->count_ * sizeof(T));    
 }
 
 
 template<typename T>
 ds::ArrayList<T>::~ArrayList()
 {
-    delete[] array_;
+    delete[] this->array_;
 }
 
 
@@ -103,24 +123,20 @@ BOOLEAN ds::ArrayList<T>::add(T item)
 {
     if(this->count_ == this->size_)
     {
-        if(this->size_ < INT32_MAX)
+        if(this->size_ < this->maxSize_)
         {
-            // increase array size
-            INT increase = this->size_ / 10;
-            increase = increase > 10 ? increase : 10;
+            INT newArraySize = this->factor_ * this->size_;                 // size of the new allocation
+            if(newArraySize > this->maxSize_ ||  newArraySize < 0)          // check for max size and over flow
+                newArraySize = this->maxSize_;                  
 
-            this->size_ += increase;                        // add increase to size
-            if(this->size_ < 0) this->size_ = INT32_MAX;    // check for overflow
+            T* newArray = new T[newArraySize];                              // allocate new array
+            memcpy(newArray, this->array_, this->count_ * sizeof(T));       // copy members from old to new array
 
-            T *temp = this->array_;
-            this->array_ = new T[this->size_];
+            this->size_ = newArraySize;                                     // update ArrayList size
 
-            // copy elements from old array to new one
-            for (INT i = 0; i < this->count_; i++)
-            {
-                this->array_[i] = temp[i];
-            }
-            delete[] temp;
+            T* temp = this->array_;                                         // keep pointer to old array
+            this->array_ = newArray;                                        // make array pointer point to the new allocation
+            delete[] temp;                                                  // free old array space
         }
         else 
         {
@@ -141,6 +157,7 @@ BOOLEAN ds::ArrayList<T>::exists(T item)
         if(this->array_[i] == item)
             return TRUE;
     }
+    
     return FALSE;
 }
 
@@ -188,7 +205,7 @@ BOOLEAN ds::ArrayList<T>::removeAt(INT index)
 
 
 template<typename T>
-T ds::ArrayList<T>::get(INT index)
+T& ds::ArrayList<T>::get(INT index)
 {
     if(index < 0) throw ds::negativeIndexNotAllowedException();
     if(index >= this->count_) throw ds::outOfRangeException();
@@ -210,7 +227,6 @@ INT ds::ArrayList<T>::getSize()
     return this->size_;
 }
 
-
 template<typename T>
 std::string ds::ArrayList<T>::toString()
 {
@@ -220,10 +236,7 @@ std::string ds::ArrayList<T>::toString()
 template<typename T>
 T& ds::ArrayList<T>::operator[](INT index)
 {
-    if(index < 0) throw ds::negativeIndexNotAllowedException();
-    if(index >= this->count_) throw ds::outOfRangeException();
-
-    return this->array_[index];
+    return this->get(index);
 }
 
 #endif // !_ARRAY_LIST_H_

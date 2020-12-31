@@ -1,19 +1,19 @@
 #include "gtest/gtest.h"
 
 #include "global.h"
-#include "LinkedList.h"
+#include "DoublyLinkedList.h"
 
 
-TEST(_LinkedListTests, create_node)
+TEST(_DoublyLinkedListTests, create_node)
 {
-    ds::LinkedListNode<INT> node(5);
+    ds::DoublyLinkedListNode<INT> node(5);
 
     EXPECT_EQ(5, node.getValue());
 }
 
-TEST(_LinkedListTests, add)
+TEST(_DoublyLinkedListTests, add)
 {
-    ds::LinkedList<INT> list;
+    ds::DoublyLinkedList<INT> list;
 
     EXPECT_EQ(TRUE, list.add(0));
     EXPECT_EQ(TRUE, list.add(0));
@@ -24,9 +24,9 @@ TEST(_LinkedListTests, add)
     EXPECT_EQ(5, list.getCount());
 }
 
-TEST(_LinkedListTests, add_loop)
+TEST(_DoublyLinkedListTests, add_loop)
 {
-    ds::LinkedList<INT> list;
+    ds::DoublyLinkedList<INT> list;
     for (INT i = 0; i < 100; i++)
     {
         list.add(i);
@@ -35,12 +35,12 @@ TEST(_LinkedListTests, add_loop)
     EXPECT_EQ(100, list.getCount());
 }
 
-TEST(_LinkedListTests, add_max_count)
+TEST(_DoublyLinkedListTests, add_max_count)
 {
     // due to ram limitation, don't use this test with full size
     INT max = 0.5 * INT32_MAX;
-
-    ds::LinkedList<INT> list;
+    
+    ds::DoublyLinkedList<INT> list;
     for (INT i = 0; i < max; i++)
     {
         list.add(i);
@@ -49,9 +49,9 @@ TEST(_LinkedListTests, add_max_count)
     EXPECT_EQ(max, list.getCount());
 }
 
-TEST(_LinkedListTests, insert)
+TEST(_DoublyLinkedListTests, insert)
 {
-    ds::LinkedList<INT> list;
+    ds::DoublyLinkedList<INT> list;
 
     EXPECT_EQ(TRUE, list.insert(0));
     EXPECT_EQ(TRUE, list.insert(0));
@@ -63,9 +63,9 @@ TEST(_LinkedListTests, insert)
 }
 
 
-TEST(_LinkedListTests, insert_order)
+TEST(_DoublyLinkedListTests, insert_order)
 {
-    ds::LinkedList<INT> list;
+    ds::DoublyLinkedList<INT> list;
 
     EXPECT_EQ(TRUE, list.insert(4));
     EXPECT_EQ(TRUE, list.insert(3));
@@ -81,9 +81,9 @@ TEST(_LinkedListTests, insert_order)
     EXPECT_EQ(4, list[4]);
 }
 
-TEST(_LinkedListTests, get)
+TEST(_DoublyLinkedListTests, get)
 {
-    ds::LinkedList<INT> list;
+    ds::DoublyLinkedList<INT> list;
 
     EXPECT_EQ(TRUE, list.add(0));
     EXPECT_EQ(TRUE, list.add(1));
@@ -97,9 +97,9 @@ TEST(_LinkedListTests, get)
     EXPECT_EQ(4, list.get(4));
 }
 
-TEST(_LinkedListTests, get_indexer)
+TEST(_DoublyLinkedListTests, get_indexer)
 {
-    ds::LinkedList<INT> list;
+    ds::DoublyLinkedList<INT> list;
 
     EXPECT_EQ(TRUE, list.add(0));
     EXPECT_EQ(TRUE, list.add(1));
@@ -114,9 +114,9 @@ TEST(_LinkedListTests, get_indexer)
 }
 
 
-TEST(_LinkedListTests, change_node_value)
+TEST(_DoublyLinkedListTests, change_node_value)
 {
-    ds::LinkedList<INT> list;
+    ds::DoublyLinkedList<INT> list;
     EXPECT_EQ(TRUE, list.add(0));
     EXPECT_EQ(TRUE, list.add(1));
     EXPECT_EQ(TRUE, list.add(2));
@@ -127,9 +127,9 @@ TEST(_LinkedListTests, change_node_value)
     EXPECT_EQ(5, list[1]);
 }
 
-TEST(_LinkedListTests, change_node_value_using_index)
+TEST(_DoublyLinkedListTests, change_node_value_using_index)
 {
-    ds::LinkedList<INT> list;
+    ds::DoublyLinkedList<INT> list;
     EXPECT_EQ(TRUE, list.add(0));
 
     list[0] = 5;
@@ -137,9 +137,9 @@ TEST(_LinkedListTests, change_node_value_using_index)
 }
 
 
-TEST(_LinkedListTests, remove_only_element_by_head)
+TEST(_DoublyLinkedListTests, remove_only_element_by_head)
 {
-    ds::LinkedList<INT> list;
+    ds::DoublyLinkedList<INT> list;
     list.add(100);
     
     EXPECT_EQ(TRUE, list.removeHead());
@@ -147,9 +147,9 @@ TEST(_LinkedListTests, remove_only_element_by_head)
     EXPECT_THROW(list.getTail(), ds::emptyCollectionException);
 }
 
-TEST(_LinkedListTests, remove_only_element_by_tail)
+TEST(_DoublyLinkedListTests, remove_only_element_by_tail)
 {
-    ds::LinkedList<INT> list;
+    ds::DoublyLinkedList<INT> list;
     list.add(100);
     
     EXPECT_EQ(TRUE, list.removeTail());
@@ -157,9 +157,9 @@ TEST(_LinkedListTests, remove_only_element_by_tail)
     EXPECT_THROW(list.getTail(), ds::emptyCollectionException);
 }
 
-TEST(_LinkedListTests, remove_all_by_at)
+TEST(_DoublyLinkedListTests, remove_all_by_at)
 {
-    ds::LinkedList<INT> list;
+    ds::DoublyLinkedList<INT> list;
     list.add(100);
     list.add(100);
     list.add(100);
@@ -173,9 +173,9 @@ TEST(_LinkedListTests, remove_all_by_at)
     EXPECT_THROW(list.getTail(), ds::emptyCollectionException);
 }
 
-TEST(_LinkedListTests, remove_head)
+TEST(_DoublyLinkedListTests, remove_head)
 {
-    ds::LinkedList<INT> list;
+    ds::DoublyLinkedList<INT> list;
     for (INT i = 0; i < 100; i++)
     {
         list.add(i);
@@ -188,9 +188,9 @@ TEST(_LinkedListTests, remove_head)
     EXPECT_EQ(99, list[98]);
 }
 
-TEST(_LinkedListTests, remove_tail)
+TEST(_DoublyLinkedListTests, remove_tail)
 {
-    ds::LinkedList<INT> list;
+    ds::DoublyLinkedList<INT> list;
     for (INT i = 0; i < 100; i++)
     {
         list.add(i);
@@ -203,9 +203,9 @@ TEST(_LinkedListTests, remove_tail)
     EXPECT_EQ(98, list[98]);
 }
 
-TEST(_LinkedListTests, remove_at_index)
+TEST(_DoublyLinkedListTests, remove_at_index)
 {
-    ds::LinkedList<INT> list;
+    ds::DoublyLinkedList<INT> list;
     for (INT i = 0; i < 100; i++)
     {
         list.add(i);
@@ -219,18 +219,18 @@ TEST(_LinkedListTests, remove_at_index)
     EXPECT_EQ(99, list[98]);
 }
 
-TEST(_LinkedListTests, remove_at_index_1_count)
+TEST(_DoublyLinkedListTests, remove_at_index_1_count)
 {
-    ds::LinkedList<INT> list;
+    ds::DoublyLinkedList<INT> list;
     list.add(0);
 
     EXPECT_EQ(TRUE, list.removeAt(0));
     EXPECT_EQ(0, list.getCount());
 }
 
-TEST(_LinkedListTests, remove_at_index_2_count)
+TEST(_DoublyLinkedListTests, remove_at_index_2_count)
 {
-    ds::LinkedList<INT> list;
+    ds::DoublyLinkedList<INT> list;
     list.add(0);
     list.add(1);
 
@@ -239,9 +239,9 @@ TEST(_LinkedListTests, remove_at_index_2_count)
     EXPECT_EQ(1, list[0]);
 }
 
-TEST(_LinkedListTests, reverse)
+TEST(_DoublyLinkedListTests, reverse)
 {
-    ds::LinkedList<INT> list;
+    ds::DoublyLinkedList<INT> list;
     list.add(0);
     list.add(1);
     list.add(2);

@@ -46,28 +46,16 @@ TEST(_ArrayListTests, create_list_using_copy_constructor)
 
 TEST(_ArrayListTests, add_million_element)
 {
-    ds::ArrayList<INT> list;
+    ds::ArrayList<INT> list(10);
     for (INT i = 0; i < 1e6; i++) list.add(i);
     
     EXPECT_EQ(1e6 , list.getCount());
-    EXPECT_EQ(1.017019e6 , list.getSize());
+    EXPECT_EQ(1310720 , list.getSize());
 }
 
 TEST(_ArrayListTests, add_more_than_max_count)
 {
-    // ds::ArrayList<INT> list;
-    // for (INT i = 0; i < INT32_MAX; i++) list.add(i);
-    
-    // // add one more
-    // EXPECT_EQ(FALSE, list.add(1)); 
-    // // test count and size
-    // EXPECT_EQ(INT32_MAX , list.getCount());
-    // EXPECT_EQ(INT32_MAX , list.getSize());
-}
-
-TEST(_ArrayListTests, add_more_than_max_count_fast)
-{
-    ds::ArrayList<INT> list(INT32_MAX);
+    ds::ArrayList<INT> list;
     for (INT i = 0; i < INT32_MAX; i++) list.add(i);
     
     // add one more
