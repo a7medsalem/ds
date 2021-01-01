@@ -15,7 +15,4 @@ target_link_libraries(${this} PUBLIC gtest_main ds++)
 
 #.
 #add_test(NAME ${this} COMMAND ${this})
-#add_test(NAME ${this} COMMAND ${this} "--gtest_filter=_playground.*")
-#add_test(NAME ${this} COMMAND ${this} "--gtest_filter=_ArrayListTests.*")
-add_test(NAME ${this} COMMAND ${this} "--gtest_filter=_LinkedListTests.*")
-#add_test(NAME ${this} COMMAND ${this} "--gtest_filter=_DoublyLinkedListTests.*")
+add_test(NAME ${this} COMMAND ${this} "--gtest_filter=-*performance*")

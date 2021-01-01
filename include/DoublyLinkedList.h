@@ -72,6 +72,7 @@ namespace ds
 /*                                          */
 /********************************************/
 
+
 template<typename T>
 ds::DoublyLinkedListNode<T>::DoublyLinkedListNode(T value)
 {

@@ -35,10 +35,11 @@ TEST(_LinkedListTests, add_loop)
     EXPECT_EQ(100, list.getCount());
 }
 
-TEST(_LinkedListTests, add_max_count)
+TEST(_LinkedListTests, add_max_count_performance)
 {
+#ifdef DEBUG
     // due to ram limitation, don't use this test with full size
-    INT max = 0.5 * INT32_MAX;
+    INT max = INT32_MAX / 2;
 
     ds::LinkedList<INT> list;
     for (INT i = 0; i < max; i++)
@@ -47,6 +48,7 @@ TEST(_LinkedListTests, add_max_count)
     }
     
     EXPECT_EQ(max, list.getCount());
+#endif
 }
 
 TEST(_LinkedListTests, insert)

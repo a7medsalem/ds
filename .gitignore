@@ -2,3 +2,5 @@
 build/
 bin/
 googletest/
+
+include/*.exe

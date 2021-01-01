@@ -1,7 +1,7 @@
 #ifndef _GLOBAL_H_
 #define _GLOBAL_H_
 
-#ifndef NDEBUG
+#ifdef _DEBUG
     #define _DEBUG_
     #define DEBUG
     #define DEBUG_MEM

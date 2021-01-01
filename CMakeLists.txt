@@ -11,12 +11,16 @@ set(CMAKE_BUILD_TYPE Debug)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+#3 bring the headers, such as *.h into the project
+include_directories(include)
+
+
 #. testing
 enable_testing()
 add_subdirectory(googletest)
+#. add test sub_directory
+add_subdirectory(tests)
 
-#3 bring the headers, such as *.h into the project
-include_directories(include)
 
 #. define headers
 file(GLOB HEADERS "include/*.h")
@@ -26,5 +30,3 @@ file(GLOB SOURCES "src/*.cpp")
 #5 add as library
 add_library(${this} STATIC ${SOURCES} ${HEADERS})
 
-#. add test sub_directory
-add_subdirectory(tests)

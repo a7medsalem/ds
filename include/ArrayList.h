@@ -15,11 +15,12 @@
 #include "global.h"
 #include "exception.h"
 #include "IString.h"
+#include "ICollection.h"
 
 namespace ds
 {
     template<typename T>
-    class ArrayList : public ds::IString
+    class ArrayList : public ds::IString, public ds::ICollection<T>
     {
     private:
         INT factor_;
@@ -42,13 +43,12 @@ namespace ds
         BOOLEAN removeAt(INT);
         T& get(INT);
 
-        T* toArray() const;
         INT getSize();
         INT getCount();
-        std::string toString() override;
-
-        //void setReallocationFactors(INT, FLOAT);
         T& operator[](INT);
+        
+        T* toArray() const override;
+        std::string toString() override;
     };
 }
 
@@ -56,20 +56,11 @@ namespace ds
 
 /********************************************/
 /*                                          */
-/*             implementaions               */
+/*                ArrayList                 */
 /*                                          */
 /********************************************/
 
 
-
-template<typename T>
-T* ds::ArrayList<T>::toArray() const
-{
-    T* result = new T[this->count_];
-    memcpy(result, this->array_, this->count_ * sizeof(T));
-    
-    return result;
-}
 
 template<typename T>
 ds::ArrayList<T>::ArrayList()
@@ -227,16 +218,32 @@ INT ds::ArrayList<T>::getSize()
     return this->size_;
 }
 
-template<typename T>
-std::string ds::ArrayList<T>::toString()
-{
-    return "ArrayList of " + std::to_string(this->count_) + " elements, with size of " + std::to_string(this->size_);
-}
 
 template<typename T>
 T& ds::ArrayList<T>::operator[](INT index)
 {
     return this->get(index);
 }
+
+
+
+
+// IString implementation
+template<typename T>
+std::string ds::ArrayList<T>::toString()
+{
+    return "ArrayList of " + std::to_string(this->count_) + " elements, with size of " + std::to_string(this->size_);
+}
+
+// ICollection implementaion
+template<typename T>
+T* ds::ArrayList<T>::toArray() const
+{
+    T* result = new T[this->count_];
+    memcpy(result, this->array_, this->count_ * sizeof(T));
+    
+    return result;
+}
+
 
 #endif // !_ARRAY_LIST_H_
