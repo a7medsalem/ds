@@ -1,6 +1,7 @@
 #ifndef _LINKED_LIST_H_
 #define _LINKED_LIST_H_
 
+#include <functional>
 #include "global.h"
 #include "exception.h"
 #include "IString.h"
@@ -15,15 +16,15 @@ namespace ds
         T value_;
         LinkedListNode *next_;
     public:
-        LinkedListNode<T>(T);
+        LinkedListNode<T>(T value);
         ~LinkedListNode<T>();
     public:
         //
         T& getValue();
-        void setValue(T);
+        void setValue(T value);
         //
         LinkedListNode* getNext();
-        void setNext(LinkedListNode*);
+        void setNext(LinkedListNode* node);
     };
 
 
@@ -35,28 +36,41 @@ namespace ds
         LinkedListNode<T> *head_;
         LinkedListNode<T> *tail_;
     private:
-        ds::LinkedListNode<T>* getNode(INT);
+        ds::LinkedListNode<T>* getNode(INT index);
         ds::LinkedListNode<T>* getHeadNode();
         ds::LinkedListNode<T>* getTailNode();
     public:
         LinkedList<T>();
-        LinkedList<T>(ArrayList<T>&);
+        LinkedList<T>(ArrayList<T>& list);
         ~LinkedList<T>();
     public:
-        BOOLEAN insert(T);
-        BOOLEAN add(T);
-        BOOLEAN removeAt(INT);
+        BOOLEAN insert(T item);
+        BOOLEAN add(T item);
+        BOOLEAN exists(T item) const;
+        BOOLEAN exists(std::function<BOOLEAN(const T&)> predicate) const;
+        
+        BOOLEAN findFirst(std::function<BOOLEAN(const T&)> predicate, T &result) const;
+        BOOLEAN findAll(std::function<BOOLEAN(const T&)> predicate, T* &result, INT &count) const;
+
+        BOOLEAN removeFirst(T item);
+        BOOLEAN removeFirst(std::function<BOOLEAN(const T&)> predicate);
+        BOOLEAN removeFirst(std::function<BOOLEAN(const T&)> predicate, std::function<void(const T)> process);
+        BOOLEAN removeAll(T item);
+        BOOLEAN removeAll(std::function<BOOLEAN(const T&)> predicate);
+        BOOLEAN removeAll(std::function<BOOLEAN(const T&)> predicate, std::function<void(const T)> process);
+        BOOLEAN removeAt(INT index);
         BOOLEAN removeHead();
         BOOLEAN removeTail();
-        T& get(INT);
-        void set(INT, T);
 
+        void set(INT index, T value);
+
+        T& get(INT index);
         T& getHead();
         T& getTail();
+        T& operator[](INT index);
+        INT getCount();
 
         void reverse();
-        INT getCount();
-        T& operator[](INT);
     };
 
 }
@@ -168,6 +182,77 @@ BOOLEAN ds::LinkedList<T>::insert(T value)
 }
 
 template<typename T>
+BOOLEAN ds::LinkedList<T>::exists(T item) const
+{
+    ds::LinkedListNode<T> *current = this->head_;
+    while (current != NULL)
+    {
+        if(current->getValue() == item) return TRUE;
+        current = current->getNext();
+    }
+
+    return FALSE;
+}
+
+template<typename T>
+BOOLEAN ds::LinkedList<T>::exists(std::function<BOOLEAN(const T&)> predicate) const
+{
+    ds::LinkedListNode<T> *current = this->head_;
+    while (current != NULL)
+    {
+        if(predicate(current->getValue())) return TRUE;
+        current = current->getNext();
+    }
+
+    return FALSE;
+}
+
+
+template<typename T>
+BOOLEAN ds::LinkedList<T>::findFirst(std::function<BOOLEAN(const T&)> predicate, T &result) const
+{
+    ds::LinkedListNode<T> *current = this->head_;
+    while (current != NULL)
+    {
+        if(predicate(current->getValue()))
+        {
+            result = current->getValue();
+            return TRUE;
+        }
+        current = current->getNext();
+    }
+    return FALSE;
+}
+
+template<typename T>
+BOOLEAN ds::LinkedList<T>::findAll(std::function<BOOLEAN(const T&)> predicate, T* &resultArray, INT &count) const
+{
+    count = 0;
+    T *temp = new T[this->count_];
+
+    ds::LinkedListNode<T> *current = this->head_;
+    while (current != NULL)
+    {
+        if(predicate(current->getValue()))
+        {
+            temp[count++] = current->getValue();
+        }
+        current = current->getNext();
+    }
+
+    if(count == 0) return FALSE;
+    else
+    {
+        resultArray = new T[count];
+        INT size = count * sizeof(T);
+        memcpy(resultArray, temp, size);
+        delete [] temp;
+        return TRUE;
+    }
+    
+}
+
+template<typename T>
 ds::LinkedListNode<T>* ds::LinkedList<T>::getNode(INT index)
 {
     if(index < 0) throw ds::negativeIndexNotAllowedException();
@@ -197,6 +282,98 @@ template<typename T>
 ds::LinkedListNode<T>* ds::LinkedList<T>::getTailNode()
 {
     return this->tail_;
+}
+
+template<typename T>
+BOOLEAN ds::LinkedList<T>::removeFirst(T item)
+{
+    return this->removeFirst([item](const T& listItem) -> BOOLEAN { return item == listItem; });
+}
+
+template<typename T>
+BOOLEAN ds::LinkedList<T>::removeAll(T item)
+{
+    return this->removeAll([item](const T& listItem) -> BOOLEAN { return item == listItem; });
+}
+
+template<typename T>
+BOOLEAN ds::LinkedList<T>::removeFirst(std::function<BOOLEAN(const T&)> predicate)
+{
+    return this->removeFirst(predicate, NULL);
+}
+
+template<typename T>
+BOOLEAN ds::LinkedList<T>::removeFirst(std::function<BOOLEAN(const T&)> predicate, std::function<void(const T)> process)
+{
+    if(count_ == 0) return FALSE;
+    if(predicate(this->head_->getValue())) return this->removeHead();
+    
+    ds::LinkedListNode<T>* prev = this->head_;
+    ds::LinkedListNode<T>* current = this->head_->getNext();
+    while (current)
+    {
+        if(predicate(current->getValue()))
+        {
+            prev->setNext(current->getNext());
+            if(current == this->tail_) this->tail_ = prev;
+            if(process) process(current->getValue());
+            delete current;
+            
+            this->count_--;
+            return TRUE;
+        }
+        else
+        {
+            prev = current;
+            current = current->getNext();
+        }
+    }
+
+    return FALSE;
+}
+
+template<typename T>
+BOOLEAN ds::LinkedList<T>::removeAll(std::function<BOOLEAN(const T&)> predicate)
+{
+    return this->removeAll(predicate, NULL);
+}
+
+template<typename T>
+BOOLEAN ds::LinkedList<T>::removeAll(std::function<BOOLEAN(const T&)> predicate, std::function<void(const T)> process)
+{
+    BOOLEAN removed = FALSE;
+    if(count_ == 0) return removed;
+
+    while (this->count_ > 0 && predicate(this->head_->getValue()))
+    {
+        this->removeHead();
+        removed = TRUE;
+    }
+    
+    ds::LinkedListNode<T>* prev = this->head_;
+    ds::LinkedListNode<T>* current = prev ? this->head_->getNext() : NULL;
+    while (current)
+    {
+        if(predicate(current->getValue()))
+        {
+            ds::LinkedListNode<T>* target = current;
+            prev->setNext(current->getNext());
+            current = current->getNext();
+            
+            if(target == this->tail_) this->tail_ = prev;
+            if(process) process(target->getValue());
+            delete target;
+            this->count_--;
+            removed = TRUE;
+        }
+        else
+        {
+            prev = current;
+            current = current->getNext();
+        }
+    }
+
+    return removed;
 }
 
 template<typename T>

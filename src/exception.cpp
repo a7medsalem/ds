@@ -4,7 +4,6 @@
 ds::exception::exception(std::string const &message) 
     : msg_(message) { }
 
-
 char const* ds::exception::what() const noexcept 
 { 
     return msg_.c_str(); 
@@ -18,5 +17,14 @@ ds::negativeIndexNotAllowedException::negativeIndexNotAllowedException()
 ds::outOfRangeException::outOfRangeException()
     : ds::exception::exception("OUT_OF_RANGE_EXCEPTION") { }
 
+
 ds::emptyCollectionException::emptyCollectionException()
     : ds::exception::exception("COLLECTION_HAS_NOT_ELEMENTS") { }
+
+
+ds::duplicatedKeyException::duplicatedKeyException()
+    : ds::exception::exception("DUPLICATED_KEY_EXCEPTION") { }
+
+
+ds::keyNotFoundException::keyNotFoundException()
+    : ds::exception::exception("KEY_NOT_FOUND_EXCEPTION") { }

@@ -23,17 +23,34 @@ namespace ds
         negativeIndexNotAllowedException();
     };
 
+
     class outOfRangeException : public ds::exception
     {
     public:
         outOfRangeException();
     };
 
+
     class emptyCollectionException : public ds::exception
     {
     public:
         emptyCollectionException();
     };
+
+
+    class duplicatedKeyException : public ds::exception
+    {
+    public:
+        duplicatedKeyException();
+    };
+
+
+    class keyNotFoundException: public ds::exception
+    {
+    public:
+        keyNotFoundException();
+    };
+
 }
 
 
