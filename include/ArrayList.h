@@ -39,9 +39,16 @@ namespace ds
     public:
         BOOLEAN add(T);
         BOOLEAN exists(T);
-        BOOLEAN remove(T);
+
         BOOLEAN removeAt(INT);
+        BOOLEAN removeFirst();
+        BOOLEAN removeLast();
+        BOOLEAN removeOne(T);
+
         T& get(INT);
+        T& pop();
+        INT getIndexOf(T item);
+        void getIndicesOf(T item, INT* &indices, INT &count);
 
         INT getSize();
         INT getCount();
@@ -159,15 +166,13 @@ void ds::ArrayList<T>::shiftElements(INT atIndex, INT shift)
     INT count = this->count_ - atIndex - shift;  // count till end
     INT shifted = atIndex + shift;               // start shifted index
 
-    for (INT i = 0; i < count; i++)
-    {
-        this->array_[atIndex + i] = this->array_[shifted + i];
-    }
+
+    memmove(this->array_ + atIndex, this->array_ + shifted, count * sizeof(T));
 }
 
 
 template<typename T>
-BOOLEAN ds::ArrayList<T>::remove(T item)
+BOOLEAN ds::ArrayList<T>::removeOne(T item)
 {
     for (INT i = 0; i < this->count_; i++)
     {
@@ -194,6 +199,53 @@ BOOLEAN ds::ArrayList<T>::removeAt(INT index)
     return TRUE;
 }
 
+template<typename T>
+BOOLEAN ds::ArrayList<T>::removeFirst()
+{
+    return this->removeAt(0);
+}
+
+template<typename T>
+BOOLEAN ds::ArrayList<T>::removeLast()
+{
+    // if there was no element, return false
+    if(this->count_ == 0) return FALSE;
+
+    this->count_--;
+    return TRUE;
+}
+
+template<typename T>
+INT ds::ArrayList<T>::getIndexOf(T item)
+{
+    for (INT i = 0; i < this->count_; i++)
+    {
+        if(this->array_[i] == item)
+        {
+            return i;
+        }
+    }
+    return -1;
+}
+
+template<typename T>
+void ds::ArrayList<T>::getIndicesOf(T item, INT* &indices, INT &count)
+{
+    count = 0;
+    INT* found = new INT[this->count_];
+
+    for (INT i = 0; i < this->count_; i++)
+    {
+        if(this->array_[i] == item)
+        {
+            found[count++] = i;
+        }
+    }
+
+    indices = new T[count];
+    memcpy(indices, found, count * sizeof(T));
+    delete [] found;
+}
 
 template<typename T>
 T& ds::ArrayList<T>::get(INT index)
@@ -204,6 +256,14 @@ T& ds::ArrayList<T>::get(INT index)
     return this->array_[index];
 }
 
+template<typename T>
+T& ds::ArrayList<T>::pop()
+{
+    if(this->count_ == 0) throw ds::emptyCollectionException();
+
+    this->count_--;
+    return this->array_[this->count_];
+}
 
 template<typename T>
 INT ds::ArrayList<T>::getCount()

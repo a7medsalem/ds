@@ -323,7 +323,7 @@ BOOLEAN ds::HashTable<K,V>::remove(K key)
     }
     else
     {
-        return FALSE:
+        return FALSE;
     }
     
 }

@@ -85,7 +85,7 @@ TEST(_ArrayListTests, add_elements_and_get)
     EXPECT_EQ(40, list.get(4));
 }
 
-TEST(_ArrayListTests, remove_by_element)
+TEST(_ArrayListTests, remove_one_by_element)
 {
     ds::ArrayList<INT> list;
     list.add(00);
@@ -94,7 +94,7 @@ TEST(_ArrayListTests, remove_by_element)
     list.add(30);
     list.add(40);
 
-    list.remove(20);
+    list.removeOne(20);
     EXPECT_EQ(4 , list.getCount());
     EXPECT_EQ(00, list.get(0));
     EXPECT_EQ(10, list.get(1));
@@ -102,7 +102,7 @@ TEST(_ArrayListTests, remove_by_element)
     EXPECT_EQ(40, list.get(3));
 }
 
-TEST(_ArrayListTests, remove_by_element_at_start)
+TEST(_ArrayListTests, remove_one_by_element_at_start)
 {
     ds::ArrayList<INT> list;
     list.add(00);
@@ -111,7 +111,7 @@ TEST(_ArrayListTests, remove_by_element_at_start)
     list.add(30);
     list.add(40);
 
-    list.remove(0);
+    list.removeOne(0);
     EXPECT_EQ(4 , list.getCount());
     EXPECT_EQ(10, list.get(0));
     EXPECT_EQ(20, list.get(1));
@@ -119,7 +119,7 @@ TEST(_ArrayListTests, remove_by_element_at_start)
     EXPECT_EQ(40, list.get(3));
 }
 
-TEST(_ArrayListTests, remove_by_element_at_last)
+TEST(_ArrayListTests, remove_one_by_element_at_last)
 {
     ds::ArrayList<INT> list;
     list.add(00);
@@ -128,7 +128,7 @@ TEST(_ArrayListTests, remove_by_element_at_last)
     list.add(30);
     list.add(40);
 
-    list.remove(40);
+    list.removeOne(40);
     EXPECT_EQ(4 , list.getCount());
     EXPECT_EQ(00, list.get(0));
     EXPECT_EQ(10, list.get(1));

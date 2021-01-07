@@ -1,6 +1,7 @@
 #ifndef _HEAP_H
 #define _HEAP_H
 
+#include <functional>
 #include "global.h"
 #include "ArrayList.h"
 #include "IComparer.h"
@@ -13,8 +14,6 @@ namespace ds
     {
     private:
         ArrayList<T> list_;
-        IComparer<T> *comparer_;
-        BOOLEAN (*comparerFunc_)(IComparer<T>*, T,T);
     private:
         void swap(INT, INT);
         INT getParentIndex(INT);
@@ -25,15 +24,23 @@ namespace ds
         BOOLEAN hasRghtChild(INT);
         T& getLeftChild();
         T& getRghtChild();
+        void heapifyUp(INT startIndex);
+        void heapifyDown(INT startIndex);
+        BOOLEAN removeAt(INT index);
     protected:
+        Heap();
         Heap(IComparer<T>*);
+        std::function<BOOLEAN(T, T)> comparerFunc_;
+        IComparer<T> *comparer_;
+        void readjust();
     public:
         ~Heap();
     public:
-        BOOLEAN add(T);
+        BOOLEAN add(T item);
         T poll();
         T& peek();
-        BOOLEAN remove(T);
+        BOOLEAN removeOne(T item);
+        BOOLEAN removeAll(T item);
     public:
         static Heap<T> createMaxHeap(IComparer<T>*);
         static Heap<T> createMinHeap(IComparer<T>*);
@@ -48,6 +55,11 @@ namespace ds
 /*                                          */
 /********************************************/
 
+template<typename T>
+ds::Heap<T>::Heap()
+{
+    // no thing to do here
+}
 
 template<typename T>
 ds::Heap<T>::Heap(IComparer<T> *comparer) : list_()
@@ -107,34 +119,95 @@ BOOLEAN ds::Heap<T>::hasRghtChild(INT parentIndex)
 }
 
 template<typename T>
+void ds::Heap<T>::heapifyUp(INT startIndex)
+{
+    INT index = startIndex;
+    INT parentIndex;
+
+    // while it has parent,
+    // and compare function return ture "what means that first paramter should be higher in order than second"
+    // swap the two elements
+    while 
+        (
+        this->hasParent(index) && 
+        this->comparerFunc_(this->list_[index], this->list_[parentIndex = this->getParentIndex(index)])
+        )
+    {
+        this->swap(index, parentIndex);
+        index = parentIndex;
+    }
+}
+
+template<typename T>
+void ds::Heap<T>::heapifyDown(INT startIndex)
+{
+    INT index = startIndex;
+    INT leftIndex;
+    while ((leftIndex = this->getLeftChildIndex(index)) < this->list_.getCount())
+    {
+        INT swapIndex;
+        INT rghtIndex = leftIndex + 1;
+        if(rghtIndex < this->list_.getCount() && this->comparerFunc_(this->list_[rghtIndex], this->list_[leftIndex]))
+        {
+            // if it has right, and right is more worth than left
+            // swap with right
+            swapIndex = rghtIndex;
+        }
+        else
+        {
+            // swap with left
+            swapIndex = leftIndex;
+        }
+
+        if(!this->comparerFunc_(this->list_[index], this->list_[swapIndex]))
+        {
+            this->swap(index, swapIndex);
+            index = swapIndex;
+        }
+        else
+        {
+            break;
+        }
+    }
+}
+
+template<typename T>
+void ds::Heap<T>::readjust()
+{
+    INT count = this->list.getCount();
+    
+    for (INT i = 0; i < count; i++)
+    {
+        if(this->hasParent(i) && this->comparerFunc_(this->list_[i], this->list_[this->getParentIndex(i)]))
+        {
+            this->heapifyUp();
+        }
+        else
+        {
+            this->heapifyDown(); 
+        }
+    }
+}
+
+template<typename T>
 BOOLEAN ds::Heap<T>::add(T item)
 {
     INT index = this->list_.getCount();
     if(this->list_.add(item))
     {
-        INT parentIndex;
-        while 
-            (
-            this->hasParent(index) && 
-            this->comparerFunc_(this->comparer_, this->list_[index], this->list_[parentIndex = this->getParentIndex(index)])
-            )
-        {
-            this->swap(index, parentIndex);
-            index = parentIndex;
-        }
-        
+        this->heapifyUp(index);
         return TRUE;
     }
 
     return FALSE;
 }
-
+ 
 template<typename T>
 T& ds::Heap<T>::peek()
 {
     if(this->list_.getCount() == 0) throw ds::emptyCollectionException();
     
-    return this>list_[0];
+    return this->list_.get(0);
 }
 
 template<typename T>
@@ -154,50 +227,73 @@ T ds::Heap<T>::poll()
 
         T top = this->list_[0];
         this->list_[0] = this->list_[lastIndex];
-        this->list_.removeAt(lastIndex);
+        this->list_.removeLast();
 
-        INT index = 0;
-        INT leftIndex;
-        while ((leftIndex = this->getLeftChildIndex(index)) < this->list_.getCount())
-        {
-            INT swapIndex;
-            INT rghtIndex = leftIndex + 1;
-            if(rghtIndex < this->list_.getCount() && this->comparerFunc_(this->comparer_, this->list_[rghtIndex], this->list_[leftIndex]))
-            {
-                // if it has right, and right is more worth than left
-                // swap with right
-                swapIndex = rghtIndex;
-            }
-            else
-            {
-                // swap with left
-                swapIndex = leftIndex;
-            }
-
-            if(!this->comparerFunc_(this->comparer_, this->list_[index], this->list_[swapIndex]))
-            {
-                this->swap(index, swapIndex);
-                index = swapIndex;
-            }
-            else
-            {
-                break;
-            }
-        }
-
+        // heapify down the top element
+        this->heapifyDown(0);
         return top;
     }
     
 }
 
+template<typename T>
+BOOLEAN ds::Heap<T>::removeAt(INT index)
+{
+    // if index less than 0, return
+    if(index < 0) return FALSE;
+    // if element was the last one, remove it without modify the heap
+    if(index == this->list_.getCount() - 1) this->list_.removeLast();
+    
+    // replace last element with removed element
+    this->list_[index] = this->list_.pop();
+
+    if(this->hasParent(index) && this->comparerFunc_(this->list_[index], this->list_[this->getParentIndex(index)]))
+    {
+        this->heapifyUp(index);
+    }
+    else
+    {
+        this->heapifyDown(index);
+    }
+    
+    return TRUE;
+}
+
+template<typename T>
+BOOLEAN ds::Heap<T>::removeOne(T item)
+{
+    INT index = this->list_.getIndexOf(item);
+    return this->removeAt(index);
+}
+
+template<typename T>
+BOOLEAN ds::Heap<T>::removeAll(T item)
+{
+    INT count; INT* indices = NULL;
+    this->list_.getIndicesOf(item, indices, count);
+
+    if(count > 0)
+    {
+        for (INT i = count-1; i >= 0; i--)
+        {
+            this->removeAt(indices[i]);
+        }
+        return TRUE;
+    }
+    else
+    {
+        return FALSE;
+    }
+    
+}
 
 template<typename T>
 ds::Heap<T> ds::Heap<T>::createMaxHeap(ds::IComparer<T>* comparer)
 {
     ds::Heap<T> heap(comparer);
-    heap.comparerFunc_ = [](IComparer<T>* comp, T item, T other) -> BOOLEAN
+    heap.comparerFunc_ = [comparer](T item, T other) -> BOOLEAN
     { 
-        return comp->compare(item, other) >= 0;;
+        return comparer->compare(item, other) >= 0;;
     };
 
     return heap;
@@ -207,9 +303,9 @@ template<typename T>
 ds::Heap<T> ds::Heap<T>::createMinHeap(ds::IComparer<T>* comparer)
 {
     ds::Heap<T> heap(comparer);
-    heap.comparerFunc_ = [](IComparer<T>* comp, T item, T other) -> BOOLEAN
+    heap.comparerFunc_ = [comparer](T item, T other) -> BOOLEAN
     { 
-        return comp->compare(item, other) <= 0;;
+        return comparer->compare(item, other) <= 0;;
     };
 
     return heap;

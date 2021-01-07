@@ -60,3 +60,65 @@ TEST(_HeapTests, poll_item)
     EXPECT_EQ(32, heap.poll());
 }
 
+TEST(_HeapTests, peek)
+{
+    IntComparer *comparer = new IntComparer();
+    ds::Heap<INT> heap = ds::Heap<INT>::createMinHeap(comparer);
+
+    heap.add(7);
+    heap.add(10);
+    heap.add(12);
+    heap.add(25);
+    heap.add(5);
+    heap.add(17);
+    heap.add(32);
+    EXPECT_EQ(5, heap.peek());
+
+    heap.add(4);
+    EXPECT_EQ(4, heap.peek());
+    
+    heap.add(1);
+    EXPECT_EQ(1, heap.peek());
+    
+    heap.add(0);
+    EXPECT_EQ(0, heap.peek());
+}
+
+TEST(_HeapTests, remove_one)
+{
+    IntComparer *comparer = new IntComparer();
+    ds::Heap<INT> heap = ds::Heap<INT>::createMinHeap(comparer);
+
+    heap.add(7);
+    heap.add(10);
+    heap.add(12);
+    heap.add(25);
+    heap.add(5);
+    heap.add(17);
+    heap.add(32);
+
+    EXPECT_EQ(5, heap.peek());
+    EXPECT_EQ(TRUE, heap.removeOne(5));
+    EXPECT_EQ(7, heap.peek());
+}
+
+TEST(_HeapTests, remove_all)
+{
+    IntComparer *comparer = new IntComparer();
+    ds::Heap<INT> heap = ds::Heap<INT>::createMinHeap(comparer);
+
+    heap.add(5);
+    heap.add(5);
+    heap.add(5);
+    heap.add(5);
+    heap.add(32);
+    heap.add(5);
+    heap.add(5);
+    heap.add(5);
+    heap.add(5);
+    heap.add(5);
+
+    EXPECT_EQ(5, heap.peek());
+    EXPECT_EQ(TRUE, heap.removeAll(5));
+    EXPECT_EQ(32, heap.peek());
+}
