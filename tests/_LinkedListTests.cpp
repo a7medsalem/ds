@@ -543,5 +543,21 @@ TEST(_LinkedListTests, reverse)
 }
 
 
+TEST(_LinkedListTests, toArray)
+{
+    ds::LinkedList<INT> list;
+    list.add(0);
+    list.add(1);
+    list.add(2);
+    list.add(3);
+
+    INT count;
+    INT* array = list.toArray(count);
+    EXPECT_EQ(0, array[0]);
+    EXPECT_EQ(1, array[1]);
+    EXPECT_EQ(2, array[2]);
+    EXPECT_EQ(3, array[3]);
+    EXPECT_EQ(4, count);
+}
 
 // TODO :: remove with process

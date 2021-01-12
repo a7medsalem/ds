@@ -89,3 +89,28 @@ TEST(_HashTableTests, get_with_indexer)
     EXPECT_EQ(TRUE, table["someKey"] == 100);
     EXPECT_EQ(TRUE, table["someOtherKey"] == 50);
 }
+
+TEST(_HashTableTests, toArray)
+{
+    ds::HashTable<const char*, INT> table;
+    //
+    EXPECT_EQ(TRUE, table.add("someKey", 101));
+    EXPECT_EQ(TRUE, table.add("someOtherKey", 201));
+    EXPECT_EQ(TRUE, table.add("notSameKey", 301));
+    EXPECT_EQ(TRUE, table.add("notOtherSameKey", 401));
+
+    INT count;
+    ds::KeyValuePair<const char*, INT>* array = table.toArray(count);
+
+    EXPECT_EQ(4, count);
+    //
+    EXPECT_EQ(std::string("notSameKey")     , std::string(array[0].key));
+    EXPECT_EQ(std::string("someOtherKey")   , std::string(array[1].key));
+    EXPECT_EQ(std::string("notOtherSameKey"), std::string(array[2].key));
+    EXPECT_EQ(std::string("someKey")        , std::string(array[3].key));
+    //
+    EXPECT_EQ(301, array[0].value);
+    EXPECT_EQ(201, array[1].value);
+    EXPECT_EQ(401, array[2].value);
+    EXPECT_EQ(101, array[3].value);
+}

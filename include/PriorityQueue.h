@@ -80,6 +80,8 @@ BOOLEAN ds::PriorityQueue<T>::updatePriority(T item, INT priority)
         (*this->priorityTable)[item] = priority;
         this->readjust();
     }
+
+    return FALSE;
 }
 
 template<typename T>

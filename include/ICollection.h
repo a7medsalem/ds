@@ -7,7 +7,7 @@ namespace ds
     class ICollection
     {
     public:
-        virtual T* toArray(void) const = 0;
+        virtual T* toArray(INT &count) const = 0;
     };
 
 } // namespace ds

@@ -29,7 +29,7 @@ namespace ds
 
 
     template<typename T>
-    class LinkedList
+    class LinkedList : public ds::ICollection<T>
     {
     private:
         INT count_;
@@ -71,6 +71,7 @@ namespace ds
         INT getCount();
 
         void reverse();
+        T* toArray(INT &count) const override;
     };
 
 }
@@ -502,5 +503,22 @@ T& ds::LinkedList<T>::operator[](INT index)
     return this->get(index);
 }
 
+template<typename T>
+T* ds::LinkedList<T>::toArray(INT &count) const
+{
+    count = this->count_;
+    T* array = new T[count];
+    if(count == 0) return array;
+
+    ds::LinkedListNode<T>* current = this->head_;
+    INT counter = 0;
+    while (current)
+    {
+        array[counter++] = current->getValue();
+        current = current->getNext();
+    }
+    
+    return array;
+}
 
 #endif // !_LINKED_LIST_H_

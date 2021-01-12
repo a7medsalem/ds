@@ -174,17 +174,17 @@ void ds::Heap<T>::heapifyDown(INT startIndex)
 template<typename T>
 void ds::Heap<T>::readjust()
 {
-    INT count = this->list.getCount();
+    INT count = this->list_.getCount();
     
     for (INT i = 0; i < count; i++)
     {
         if(this->hasParent(i) && this->comparerFunc_(this->list_[i], this->list_[this->getParentIndex(i)]))
         {
-            this->heapifyUp();
+            this->heapifyUp(i);
         }
         else
         {
-            this->heapifyDown(); 
+            this->heapifyDown(i); 
         }
     }
 }

@@ -54,7 +54,7 @@ namespace ds
         INT getCount();
         T& operator[](INT);
         
-        T* toArray() const override;
+        T* toArray(INT &count) const override;
         std::string toString() override;
     };
 }
@@ -297,10 +297,12 @@ std::string ds::ArrayList<T>::toString()
 
 // ICollection implementaion
 template<typename T>
-T* ds::ArrayList<T>::toArray() const
+T* ds::ArrayList<T>::toArray(INT &count) const
 {
-    T* result = new T[this->count_];
-    memcpy(result, this->array_, this->count_ * sizeof(T));
+    count = this->count_;
+
+    T* result = new T[count];
+    memcpy(result, this->array_, count * sizeof(T));
     
     return result;
 }

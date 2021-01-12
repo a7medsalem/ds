@@ -52,9 +52,10 @@ namespace ds
     private:
         INT size_;
         INT count_;
+        INT sizeLimit_;
         INT maxSubCount_;
         INT subCountLimit_;
-        LinkedList<KeyValuePair<K,V>>** array_;
+        LinkedList<KeyValuePair<K,V>>* *array_;
     private:
         INT hash(K key);
         void updateSubCount(INT count);
@@ -72,6 +73,7 @@ namespace ds
         V& get(K);
         ds::KeyValuePairProxy<K,V> operator[](K key);
         INT getCount();
+        KeyValuePair<K,V>* toArray(INT &count);
     };
     
 
@@ -231,6 +233,7 @@ ds::HashTable<K,V>::HashTable()
 {
     this->size_  = 1e3;
     this->count_ = 0;
+    this->sizeLimit_ = INT32_MAX;
     this->maxSubCount_ = 0;
     this->subCountLimit_ = this->size_ / 100;
 
@@ -246,6 +249,7 @@ ds::HashTable<K,V>::HashTable(INT initialSize)
 {
     this->size_  = initialSize;
     this->count_ = 0;
+    this->sizeLimit_ = INT32_MAX;
     this->maxSubCount_ = 0;
     this->subCountLimit_ = this->size_ / 100 > 5 ? this->size_ / 100 : 5;
 
@@ -361,6 +365,37 @@ ds::KeyValuePairProxy<K,V> ds::HashTable<K,V>::operator[](K key)
     {
         throw ds::keyNotFoundException();
     }
+}
+
+
+template<typename K, typename V>
+INT ds::HashTable<K,V>::getCount()
+{
+    return this->count_;
+}
+
+
+template<typename K, typename V>
+ds::KeyValuePair<K,V>* ds::HashTable<K,V>::toArray(INT &count)
+{
+    count = this->count_;
+    ds::KeyValuePair<K,V>* pairs = new ds::KeyValuePair<K,V>[count];
+
+    INT counter = 0;
+    for (INT i = 0; i < this->size_; i++)
+    {
+        if(this->array_[i] == NULL) continue;
+
+        INT linkedCount = 0;
+        ds::KeyValuePair<K,V>* linekedArray = this->array_[i]->toArray(linkedCount);
+        for (INT j = 0; j < linkedCount; j++)
+        {
+            pairs[counter++] = linekedArray[j];
+        }
+        delete[] linekedArray;
+    }
+    
+    return pairs;
 }
 
 #endif // !_HASH_TABLE_H
