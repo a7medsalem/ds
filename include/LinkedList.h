@@ -46,18 +46,16 @@ namespace ds
     public:
         BOOLEAN insert(T item);
         BOOLEAN add(T item);
-        BOOLEAN exists(T item) const;
-        BOOLEAN exists(std::function<BOOLEAN(const T&)> predicate) const;
+        BOOLEAN contains(T item) const;
+        BOOLEAN contains(std::function<BOOLEAN(const T&)> predicate) const;
         
         BOOLEAN findFirst(std::function<BOOLEAN(const T&)> predicate, T &result) const;
         BOOLEAN findAll(std::function<BOOLEAN(const T&)> predicate, T* &result, INT &count) const;
 
         BOOLEAN removeFirst(T item);
         BOOLEAN removeFirst(std::function<BOOLEAN(const T&)> predicate);
-        BOOLEAN removeFirst(std::function<BOOLEAN(const T&)> predicate, std::function<void(const T)> process);
         BOOLEAN removeAll(T item);
         BOOLEAN removeAll(std::function<BOOLEAN(const T&)> predicate);
-        BOOLEAN removeAll(std::function<BOOLEAN(const T&)> predicate, std::function<void(const T)> process);
         BOOLEAN removeAt(INT index);
         BOOLEAN removeHead();
         BOOLEAN removeTail();
@@ -183,7 +181,7 @@ BOOLEAN ds::LinkedList<T>::insert(T value)
 }
 
 template<typename T>
-BOOLEAN ds::LinkedList<T>::exists(T item) const
+BOOLEAN ds::LinkedList<T>::contains(T item) const
 {
     ds::LinkedListNode<T> *current = this->head_;
     while (current != NULL)
@@ -196,7 +194,7 @@ BOOLEAN ds::LinkedList<T>::exists(T item) const
 }
 
 template<typename T>
-BOOLEAN ds::LinkedList<T>::exists(std::function<BOOLEAN(const T&)> predicate) const
+BOOLEAN ds::LinkedList<T>::contains(std::function<BOOLEAN(const T&)> predicate) const
 {
     ds::LinkedListNode<T> *current = this->head_;
     while (current != NULL)
@@ -300,12 +298,6 @@ BOOLEAN ds::LinkedList<T>::removeAll(T item)
 template<typename T>
 BOOLEAN ds::LinkedList<T>::removeFirst(std::function<BOOLEAN(const T&)> predicate)
 {
-    return this->removeFirst(predicate, NULL);
-}
-
-template<typename T>
-BOOLEAN ds::LinkedList<T>::removeFirst(std::function<BOOLEAN(const T&)> predicate, std::function<void(const T)> process)
-{
     if(count_ == 0) return FALSE;
     if(predicate(this->head_->getValue())) return this->removeHead();
     
@@ -317,7 +309,6 @@ BOOLEAN ds::LinkedList<T>::removeFirst(std::function<BOOLEAN(const T&)> predicat
         {
             prev->setNext(current->getNext());
             if(current == this->tail_) this->tail_ = prev;
-            if(process) process(current->getValue());
             delete current;
             
             this->count_--;
@@ -333,14 +324,9 @@ BOOLEAN ds::LinkedList<T>::removeFirst(std::function<BOOLEAN(const T&)> predicat
     return FALSE;
 }
 
-template<typename T>
-BOOLEAN ds::LinkedList<T>::removeAll(std::function<BOOLEAN(const T&)> predicate)
-{
-    return this->removeAll(predicate, NULL);
-}
 
 template<typename T>
-BOOLEAN ds::LinkedList<T>::removeAll(std::function<BOOLEAN(const T&)> predicate, std::function<void(const T)> process)
+BOOLEAN ds::LinkedList<T>::removeAll(std::function<BOOLEAN(const T&)> predicate)
 {
     BOOLEAN removed = FALSE;
     if(count_ == 0) return removed;
@@ -362,7 +348,6 @@ BOOLEAN ds::LinkedList<T>::removeAll(std::function<BOOLEAN(const T&)> predicate,
             current = current->getNext();
             
             if(target == this->tail_) this->tail_ = prev;
-            if(process) process(target->getValue());
             delete target;
             this->count_--;
             removed = TRUE;
@@ -376,6 +361,7 @@ BOOLEAN ds::LinkedList<T>::removeAll(std::function<BOOLEAN(const T&)> predicate,
 
     return removed;
 }
+
 
 template<typename T>
 BOOLEAN ds::LinkedList<T>::removeAt(INT index)

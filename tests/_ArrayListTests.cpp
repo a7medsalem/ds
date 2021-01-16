@@ -53,20 +53,6 @@ TEST(_ArrayListTests, add_million_element)
     EXPECT_EQ(1310720 , list.getSize());
 }
 
-TEST(_ArrayListTests, add_more_than_max_count_performance)
-{
-#ifdef DEBUG
-    ds::ArrayList<INT> list;
-    for (INT i = 0; i < INT32_MAX; i++) list.add(i);
-    
-    // add one more
-    EXPECT_EQ(FALSE, list.add(1)); 
-    // test count and size
-    EXPECT_EQ(INT32_MAX , list.getCount());
-    EXPECT_EQ(INT32_MAX , list.getSize());
-#endif
-}
-
 
 TEST(_ArrayListTests, add_elements_and_get)
 {

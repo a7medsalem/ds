@@ -283,7 +283,7 @@ BOOLEAN ds::HashTable<K,V>::hasKey(K key)
     INT hashed = this->hash(key);
     if(this->array_[hashed] == NULL) return FALSE;
 
-    return this->array_[hashed]->exists( [key](const ds::KeyValuePair<K,V> &item) -> BOOLEAN { return item.key == key; } );
+    return this->array_[hashed]->contains( [key](const ds::KeyValuePair<K,V> &item) -> BOOLEAN { return item.key == key; } );
 }
 
 template<typename K, typename V>
@@ -298,7 +298,7 @@ BOOLEAN ds::HashTable<K,V>::add(K key, V value)
     }
     else
     {
-        if(this->array_[hashed]->exists( [key](const ds::KeyValuePair<K,V> &pair) -> BOOLEAN { return pair.key == key; } )/*exists*/ )/*if*/
+        if(this->array_[hashed]->contains( [key](const ds::KeyValuePair<K,V> &pair) -> BOOLEAN { return pair.key == key; } )/*exists*/ )/*if*/
             throw ds::exception("KEY_ALREADY_EXISTS");
     }
     

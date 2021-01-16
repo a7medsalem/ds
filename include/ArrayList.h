@@ -38,7 +38,7 @@ namespace ds
         ~ArrayList();
     public:
         BOOLEAN add(T);
-        BOOLEAN exists(T);
+        BOOLEAN contains(T);
 
         BOOLEAN removeAt(INT);
         BOOLEAN removeFirst();
@@ -148,7 +148,7 @@ BOOLEAN ds::ArrayList<T>::add(T item)
 
 
 template<typename T>
-BOOLEAN ds::ArrayList<T>::exists(T item)
+BOOLEAN ds::ArrayList<T>::contains(T item)
 {
     for (INT i = 0; i < this->count_; i++)
     {

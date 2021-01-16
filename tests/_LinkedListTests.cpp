@@ -35,21 +35,6 @@ TEST(_LinkedListTests, add_loop)
     EXPECT_EQ(100, list.getCount());
 }
 
-TEST(_LinkedListTests, add_max_count_performance)
-{
-#ifdef DEBUG
-    // due to ram limitation, don't use this test with full size
-    INT max = INT32_MAX / 2;
-
-    ds::LinkedList<INT> list;
-    for (INT i = 0; i < max; i++)
-    {
-        list.add(i);
-    }
-    
-    EXPECT_EQ(max, list.getCount());
-#endif
-}
 
 TEST(_LinkedListTests, insert)
 {
@@ -107,10 +92,10 @@ TEST(_LinkedListTests, exists)
     EXPECT_EQ(TRUE, list.add(1));
     EXPECT_EQ(TRUE, list.add(2));
 
-    EXPECT_EQ(TRUE, list.exists(0));
-    EXPECT_EQ(TRUE, list.exists(1));
-    EXPECT_EQ(TRUE, list.exists(2));
-    EXPECT_EQ(FALSE, list.exists(3));
+    EXPECT_EQ(TRUE, list.contains(0));
+    EXPECT_EQ(TRUE, list.contains(1));
+    EXPECT_EQ(TRUE, list.contains(2));
+    EXPECT_EQ(FALSE, list.contains(3));
 }
 
 TEST(_LinkedListTests, exists_with_predicate)
@@ -121,10 +106,10 @@ TEST(_LinkedListTests, exists_with_predicate)
     EXPECT_EQ(TRUE, list.add(1));
     EXPECT_EQ(TRUE, list.add(2));
 
-    EXPECT_EQ(TRUE , list.exists([](const INT &item) -> BOOLEAN { return item == 0; }));
-    EXPECT_EQ(TRUE , list.exists([](const INT &item) -> BOOLEAN { return item == 1; }));
-    EXPECT_EQ(TRUE , list.exists([](const INT &item) -> BOOLEAN { return item == 2; }));
-    EXPECT_EQ(FALSE, list.exists([](const INT &item) -> BOOLEAN { return item == 3; }));
+    EXPECT_EQ(TRUE , list.contains([](const INT &item) -> BOOLEAN { return item == 0; }));
+    EXPECT_EQ(TRUE , list.contains([](const INT &item) -> BOOLEAN { return item == 1; }));
+    EXPECT_EQ(TRUE , list.contains([](const INT &item) -> BOOLEAN { return item == 2; }));
+    EXPECT_EQ(FALSE, list.contains([](const INT &item) -> BOOLEAN { return item == 3; }));
 }
 
 TEST(_LinkedListTests, find_first)

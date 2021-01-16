@@ -15,4 +15,4 @@ target_link_libraries(${this} PUBLIC gtest_main ds++)
 
 #.
 #add_test(NAME ${this} COMMAND ${this})
-add_test(NAME ${this} COMMAND ${this} "--gtest_filter=-*performance*")
+add_test(NAME ${this} COMMAND ${this})

@@ -46,8 +46,8 @@ namespace ds
         DoublyLinkedList<T>(ArrayList<T>&);
         ~DoublyLinkedList<T>();
     public:
-        BOOLEAN insert(T);
         BOOLEAN add(T);
+        BOOLEAN insert(T);
         BOOLEAN removeAt(INT);
         BOOLEAN removeHead();
         BOOLEAN removeTail();
