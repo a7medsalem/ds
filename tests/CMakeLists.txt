@@ -14,5 +14,5 @@ add_executable(${this} ${SOURCES})
 target_link_libraries(${this} PUBLIC gtest_main ds++)
 
 #.
-#add_test(NAME ${this} COMMAND ${this})
 add_test(NAME ${this} COMMAND ${this})
+#add_test(NAME ${this} COMMAND ${this} "--gtest_filter=_LinkedListTests.*")

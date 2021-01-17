@@ -545,4 +545,53 @@ TEST(_LinkedListTests, toArray)
     EXPECT_EQ(4, count);
 }
 
-// TODO :: remove with process
+TEST(_LinkedListTests, iterator_for_loop)
+{
+    ds::LinkedList<INT> list;
+    list.add(0);
+    list.add(1);
+    list.add(2);
+    list.add(3);
+    list.add(4);
+
+    INT counter = 0;
+    for(auto i : list)
+    {
+        EXPECT_EQ(counter++, i);
+    }
+}
+
+TEST(_LinkedListTests, iterator_for)
+{
+    ds::LinkedList<INT> list;
+    list.add(0);
+    list.add(1);
+    list.add(2);
+    list.add(3);
+    list.add(4);
+
+    INT counter = 0;
+    for (auto it = list.begin(); it != list.end(); it++)
+    {
+        EXPECT_EQ(counter++, *it);
+    }
+    EXPECT_EQ(5, counter);
+}
+
+TEST(_LinkedListTests, iterator_std_fill)
+{
+    ds::LinkedList<INT> list;
+    list.add(0);
+    list.add(1);
+    list.add(2);
+    list.add(3);
+    list.add(4);
+
+    std::fill(list.begin(), list.end(), 5);
+    EXPECT_EQ(5, list[0]);
+    EXPECT_EQ(5, list[1]);
+    EXPECT_EQ(5, list[2]);
+    EXPECT_EQ(5, list[3]);
+    EXPECT_EQ(5, list[4]);
+}
+

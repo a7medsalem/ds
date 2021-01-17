@@ -16,6 +16,7 @@ namespace ds
         T value_;
         LinkedListNode *next_;
     public:
+        LinkedListNode<T>();
         LinkedListNode<T>(T value);
         ~LinkedListNode<T>();
     public:
@@ -35,6 +36,7 @@ namespace ds
         INT count_;
         LinkedListNode<T> *head_;
         LinkedListNode<T> *tail_;
+        LinkedListNode<T> *outOfRange_;
     private:
         ds::LinkedListNode<T>* getNode(INT index);
         ds::LinkedListNode<T>* getHeadNode();
@@ -70,15 +72,60 @@ namespace ds
 
         void reverse();
         T* toArray(INT &count) const override;
+    public:
+        template<typename IType>
+        struct Iterator
+        {
+        private:
+            LinkedListNode<IType>* ptr_;
+        public:
+            using iterator_category = std::forward_iterator_tag;
+            using difference_type   = std::ptrdiff_t;
+            using value_type        = IType;
+            using pointer           = IType*;
+            using reference         = IType&;
+        public:
+            Iterator(LinkedListNode<IType>* ptr) : ptr_(ptr) {}
+        public:
+            IType& operator*() const { return this->ptr_->getValue(); }
+            IType* operator->() { return &this->ptr_->getValue(); }
+            // Prefix increment
+            Iterator& operator++() { this->ptr_ = this->ptr_->getNext(); return *this; }  
+            // Postfix increment
+            Iterator operator++(INT) 
+            { 
+                Iterator temp = *this; 
+                ++(*this);
+                return temp; 
+            }
+            operator IType() 
+            {
+                return this->ptr_->getValue();
+            }
+            friend bool operator== (const Iterator& a, const Iterator& b) { return a.ptr_ == b.ptr_; };
+            friend bool operator== (const Iterator& a, const IType& b) { return a.ptr_->getValue() == b; };
+            friend bool operator!= (const Iterator& a, const Iterator& b) { return a.ptr_ != b.ptr_; };  
+            friend bool operator!= (const Iterator& a, const IType& b) { return a.ptr_->getValue() != b; };
+        };
+        
+        Iterator<T> begin();
+        Iterator<T> end();
     };
 
 }
 
 /********************************************/
 /*                                          */
-/*             implementaions               */
+/*             LinkedListNode               */
 /*                                          */
 /********************************************/
+
+
+template<typename T>
+ds::LinkedListNode<T>::LinkedListNode()
+{
+    this->next_ = NULL;
+}
 
 template<typename T>
 ds::LinkedListNode<T>::LinkedListNode(T value)
@@ -119,23 +166,33 @@ T& ds::LinkedListNode<T>::getValue()
 
 
 
+/********************************************/
+/*                                          */
+/*               LinkedList                 */
+/*                                          */
+/********************************************/
+
+
 template<typename T>
 ds::LinkedList<T>::LinkedList()
 {
     this->count_ = 0;
     this->head_ = NULL;
     this->tail_ = NULL;
+    this->outOfRange_ = new ds::LinkedListNode<T>();
 }
 
 template<typename T>
 ds::LinkedList<T>::~LinkedList()
 {
-    while (this->head_)
+    ds::LinkedListNode<T>* current = this->head_;
+    while (current && current != this->outOfRange_)
     {
-        ds::LinkedListNode<T> *temp = this->head_;
-        this->head_ = this->head_->getNext();
+        ds::LinkedListNode<T> *temp = current;
+        current = current->getNext();
         delete temp;
     }
+    if(this->outOfRange_) delete this->outOfRange_;
 }
 
 template<typename T>
@@ -155,6 +212,7 @@ BOOLEAN ds::LinkedList<T>::add(T value)
         this->tail_ = node;
     }
     
+    this->tail_->setNext(this->outOfRange_);
     this->count_++;
     return TRUE;
 }
@@ -169,6 +227,7 @@ BOOLEAN ds::LinkedList<T>::insert(T value)
     {
         this->head_ = node;
         this->tail_ = node;
+        this->tail_->setNext(this->outOfRange_);
     }
     else
     {
@@ -184,7 +243,7 @@ template<typename T>
 BOOLEAN ds::LinkedList<T>::contains(T item) const
 {
     ds::LinkedListNode<T> *current = this->head_;
-    while (current != NULL)
+    while (current && current != this->outOfRange_)
     {
         if(current->getValue() == item) return TRUE;
         current = current->getNext();
@@ -197,7 +256,7 @@ template<typename T>
 BOOLEAN ds::LinkedList<T>::contains(std::function<BOOLEAN(const T&)> predicate) const
 {
     ds::LinkedListNode<T> *current = this->head_;
-    while (current != NULL)
+    while (current && current != this->outOfRange_)
     {
         if(predicate(current->getValue())) return TRUE;
         current = current->getNext();
@@ -211,7 +270,7 @@ template<typename T>
 BOOLEAN ds::LinkedList<T>::findFirst(std::function<BOOLEAN(const T&)> predicate, T &result) const
 {
     ds::LinkedListNode<T> *current = this->head_;
-    while (current != NULL)
+    while (current && current != this->outOfRange_)
     {
         if(predicate(current->getValue()))
         {
@@ -230,7 +289,7 @@ BOOLEAN ds::LinkedList<T>::findAll(std::function<BOOLEAN(const T&)> predicate, T
     T *temp = new T[this->count_];
 
     ds::LinkedListNode<T> *current = this->head_;
-    while (current != NULL)
+    while (current && current != this->outOfRange_)
     {
         if(predicate(current->getValue()))
         {
@@ -303,7 +362,7 @@ BOOLEAN ds::LinkedList<T>::removeFirst(std::function<BOOLEAN(const T&)> predicat
     
     ds::LinkedListNode<T>* prev = this->head_;
     ds::LinkedListNode<T>* current = this->head_->getNext();
-    while (current)
+    while (current && current != this->outOfRange_)
     {
         if(predicate(current->getValue()))
         {
@@ -339,7 +398,7 @@ BOOLEAN ds::LinkedList<T>::removeAll(std::function<BOOLEAN(const T&)> predicate)
     
     ds::LinkedListNode<T>* prev = this->head_;
     ds::LinkedListNode<T>* current = prev ? this->head_->getNext() : NULL;
-    while (current)
+    while (current && current != this->outOfRange_)
     {
         if(predicate(current->getValue()))
         {
@@ -406,10 +465,10 @@ BOOLEAN ds::LinkedList<T>::removeHead()
 template<typename T>
 BOOLEAN ds::LinkedList<T>::removeTail()
 {
-    if(!this->tail_) return FALSE;
+    if(!this->tail_) return FALSE;                              // if there were no tail, return
     
     ds::LinkedListNode<T>* current = NULL;
-    if(this->count_ > 1)
+    if(this->count_ > 1)                                        // if count more than 1 element, loop till get prev element to tail
     {
         current = this->head_;
         while (current->getNext() != this->tail_)
@@ -423,6 +482,7 @@ BOOLEAN ds::LinkedList<T>::removeTail()
     delete this->tail_;
     this->tail_ = current;
     if(this->count_ == 0) this->tail_ = this->head_ = NULL;
+    if(this->tail_) this->tail_->setNext(this->outOfRange_);
     return TRUE;
 }
 
@@ -461,7 +521,7 @@ void ds::LinkedList<T>::reverse()
     ds::LinkedListNode<T>* next = NULL;
     ds::LinkedListNode<T>* prev = NULL;
 
-    while (current)
+    while (current && current != this->outOfRange_)
     {
         // store next node
         next = current->getNext();
@@ -474,6 +534,7 @@ void ds::LinkedList<T>::reverse()
     
     this->tail_ = this->head_;
     this->head_ = prev;
+    if(this->tail_) this->tail_->setNext(this->outOfRange_);
 }
 
 template<typename T>
@@ -498,13 +559,25 @@ T* ds::LinkedList<T>::toArray(INT &count) const
 
     ds::LinkedListNode<T>* current = this->head_;
     INT counter = 0;
-    while (current)
+    while (current && current != this->outOfRange_)
     {
         array[counter++] = current->getValue();
         current = current->getNext();
     }
     
     return array;
+}
+
+template<typename T>
+ds::LinkedList<T>::Iterator<T> ds::LinkedList<T>::begin()
+{
+    return ds::LinkedList<T>::Iterator<T>(this->head_);
+}
+
+template<typename T>
+ds::LinkedList<T>::Iterator<T> ds::LinkedList<T>::end()
+{
+    return ds::LinkedList<T>::Iterator<T>(this->outOfRange_);
 }
 
 #endif // !_LINKED_LIST_H_

@@ -1,10 +1,17 @@
 Data Structures
 
 * ArrayList { Linear Structure - Dynamic Size - Indexed[] } : IString, ICollection
-    - add(item)
+    - add(item)                         // tested
+    - insert(item)                      // tested
     - contains(item)
-    - remove(item)
+    - removeOne(item)
+    - removeOne(fn::predicate)
+    - removeAll(item)
+    - removeAll(fn::predicate)
     - removeAt(index)
+    - removeFirst()
+    - removeLast()
+    - pop()
     - get(index)
     - getSize()
     - getCount()

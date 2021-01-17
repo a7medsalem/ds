@@ -81,7 +81,7 @@ namespace ds
     template<typename KeyType>
     struct Hash
     {
-        static INT getHash(INT size, KeyType key)
+        static INT getHash_impl(INT size, KeyType key)
         {
             return key % size;
         }
@@ -91,7 +91,7 @@ namespace ds
     template<typename KeyType>
     struct Hash<KeyType*>
     {
-        static INT getHash(INT size, KeyType* key)
+        static INT getHash_impl(INT size, KeyType* key)
         {
             std::uintptr_t integer = reinterpret_cast<std::uintptr_t>(key);
             return integer % size;
@@ -101,7 +101,7 @@ namespace ds
     template<>
     struct Hash<INT>
     {
-        static INT getHash(INT size, INT key)
+        static INT getHash_impl(INT size, INT key)
         {
             return key % size;
         }
@@ -110,7 +110,7 @@ namespace ds
     template<>
     struct Hash<char*>
     {
-        static INT getHash(INT size, char* key)
+        static INT getHash_impl(INT size, char* key)
         {
             INT sum = 0;
             INT counter = 0;
@@ -127,7 +127,7 @@ namespace ds
     template<>
     struct Hash<const char*>
     {
-        static INT getHash(INT size, const char* key)
+        static INT getHash_impl(INT size, const char* key)
         {
             INT sum = 0;
             INT counter = 0;
@@ -144,9 +144,9 @@ namespace ds
     template<>
     struct Hash<std::string>
     {
-        static INT getHash(INT size, std::string key)
+        static INT getHash_impl(INT size, std::string key)
         {
-            return Hash<const char*>::getHash(size, key.c_str());
+            return Hash<const char*>::getHash_impl(size, key.c_str());
         }
     };
 }
@@ -274,7 +274,7 @@ ds::HashTable<K,V>::~HashTable()
 template<typename K, typename V>
 INT ds::HashTable<K,V>::hash(K key)
 {
-    return ds::Hash<K>::getHash(this->size_, key);
+    return ds::Hash<K>::getHash_impl(this->size_, key);
 }
 
 template<typename K, typename V>
