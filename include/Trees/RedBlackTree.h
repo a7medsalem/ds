@@ -20,15 +20,13 @@ namespace ds
         INT count_;
     private:
         void insertNode(RedBlackTreeNode<T>* parent, RedBlackTreeNode<T>* &root, T value);
-        void recolor(RedBlackTreeNode<T> *node);
-        void balance(RedBlackTreeNode<T> *node);
         RedBlackTreeNode<T>* getGrandfather(RedBlackTreeNode<T> *node);
         RedBlackTreeNode<T>* getUncle(RedBlackTreeNode<T> *node);
-
+        //
+        void recolor(RedBlackTreeNode<T> *node);
         void leftRotateAbout(RedBlackTreeNode<T>* center);
         void rghtRotateAbout(RedBlackTreeNode<T>* center);
-        void rigtSwap(RedBlackTreeNode<T>* root);
-        void leftSwap(RedBlackTreeNode<T>* root);
+        void balance(RedBlackTreeNode<T> *node);
     public:
         RedBlackTree<T>();
         RedBlackTree<T>(std::function<INT(T,T)> comparer);
@@ -137,21 +135,6 @@ void ds::RedBlackTree<T>::rghtRotateAbout(ds::RedBlackTreeNode<T>* center)
 }
 
 template<typename T>
-void ds::RedBlackTree<T>::rigtSwap(ds::RedBlackTreeNode<T>* root)
-{
-    ds::RedBlackTreeNode<T>* oldTail = (ds::RedBlackTreeNode<T>*)root->rigt->left;
-    ds::RedBlackTreeNode<T>* newTail = (ds::RedBlackTreeNode<T>*)root->rigt;
-    //
-    root->rigt = oldTail;
-    oldTail->parent = root;
-    //
-    oldTail->rigt = newTail;
-    newTail->parent = oldTail;
-    //
-    newTail->left = NULL;
-}
-
-template<typename T>
 void ds::RedBlackTree<T>::leftRotateAbout(ds::RedBlackTreeNode<T>* center)
 {
     ds::RedBlackTreeNode<T>* grandfather = center->parent->parent;
@@ -176,20 +159,6 @@ void ds::RedBlackTree<T>::leftRotateAbout(ds::RedBlackTreeNode<T>* center)
     if(oldCenterLeft) oldCenterLeft->parent = parent;
 }
 
-template<typename T>
-void ds::RedBlackTree<T>::leftSwap(ds::RedBlackTreeNode<T>* root)
-{
-    ds::RedBlackTreeNode<T>* newTail = (ds::RedBlackTreeNode<T>*)root->left;
-    ds::RedBlackTreeNode<T>* oldTail = (ds::RedBlackTreeNode<T>*)root->left->rigt;
-    //
-    root->left = oldTail;
-    oldTail->parent = root;
-    //
-    oldTail->left = newTail;
-    newTail->parent = oldTail;
-    //
-    newTail->rigt = NULL;
-}
 
 template<typename T>
 void ds::RedBlackTree<T>::balance(ds::RedBlackTreeNode<T> *node)
