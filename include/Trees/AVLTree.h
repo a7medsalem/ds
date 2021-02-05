@@ -45,7 +45,7 @@ namespace ds
 
 /********************************************/
 /*                                          */
-/*            BinarySearchTree              */
+/*                 AVLTree                  */
 /*                                          */
 /********************************************/
 
@@ -135,8 +135,6 @@ void ds::AVLTree<T>::leftSwap(ds::AVLTreeNode<T>* &root)
 template<typename T>
 void ds::AVLTree<T>::insertNode(ds::AVLTreeNode<T>* &root, T value)
 {
-    ds::AVLTreeNode<T>* result = NULL;
-
     if(!root) root = new ds::AVLTreeNode<T>(value);
     else
     {
