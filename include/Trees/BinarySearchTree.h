@@ -90,12 +90,7 @@ ds::TreeNode<T>* ds::BinarySearchTree<T>::insertNode(ds::TreeNode<T>* &root, T v
         }
         else
         {
-            // if same value, insert new node to direct left of current node
-            // useful for delete bulk elements. if this part removed, re-modify removeAll function
-            ds::TreeNode<T>* inserted = new ds::TreeNode<T>(value);
-            inserted->left = root->left;
-            root->left = inserted;
-            return inserted;
+            root->count++; return root;
         }
     }
 }
@@ -204,7 +199,15 @@ BOOLEAN ds::BinarySearchTree<T>::removeOne(T value)
     ds::TreeNode<T>*& node = this->findNode(this->root_, value);
     if(node != NULL)
     {
-        this->removeNode(node);
+        if(node->count > 1)
+        {
+            node->count--;
+        }
+        else
+        {
+            this->removeNode(node);
+        }
+        
         this->count_--;
         return TRUE;
     }
@@ -220,12 +223,8 @@ BOOLEAN ds::BinarySearchTree<T>::removeAll(T value)
     ds::TreeNode<T>*& node = this->findNode(this->root_, value);
     if(node != NULL)
     {
-        do
-        {
-            this->removeNode(node);
-            this->count_--;
-        }
-        while (this->comparer_(node->value, value) == 0);
+        this->count_ -= node->count;
+        this->removeNode(node);
         //
         return TRUE;
     }

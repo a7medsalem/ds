@@ -2,9 +2,11 @@
 
 #include "global.h"
 #include "Trees\BinarySearchTree.h"
-
+#include "Trees\TreeTraverser.h"
 
 INT* threeLevelsCase = new INT[7] { 50, 25, 75, 12, 37, 63, 87 };
+ds::InorderTraverser<INT>* indorderTraverser = new ds::InorderTraverser<INT>();
+
 
 
 TEST(_BinarySearchTreeTests, create_tree)
@@ -42,27 +44,42 @@ TEST(_BinarySearchTreeTests, create_insert_same_in_order)
 {
     ds::BinarySearchTree<INT> tree;
 
-    tree.insert(threeLevelsCase[0]);
-    tree.insert(threeLevelsCase[1]);
-    tree.insert(threeLevelsCase[2]);
-    tree.insert(threeLevelsCase[1]);
-    tree.insert(threeLevelsCase[1]);
+    tree.insert(threeLevelsCase[0]);    // 50
+    tree.insert(threeLevelsCase[1]);    // 25
+    tree.insert(threeLevelsCase[2]);    // 75
+    tree.insert(threeLevelsCase[1]);    // 25
+    tree.insert(threeLevelsCase[1]);    // 25
 
     EXPECT_EQ(5, tree.getCount());
+
+    ds::ArrayList<INT>* list = tree.toList(indorderTraverser);
+    EXPECT_EQ(25, list->get(0));
+    EXPECT_EQ(25, list->get(1));
+    EXPECT_EQ(25, list->get(2));
+    EXPECT_EQ(50, list->get(3));
+    EXPECT_EQ(75, list->get(4));
 }
 
 TEST(_BinarySearchTreeTests, create_insert_same_out_of_order)
 {
     ds::BinarySearchTree<INT> tree;
 
-    tree.insert(threeLevelsCase[0]);
-    tree.insert(threeLevelsCase[1]);
-    tree.insert(threeLevelsCase[2]);
-    tree.insert(threeLevelsCase[3]);
-    tree.insert(threeLevelsCase[1]);
-    tree.insert(threeLevelsCase[1]);
+    tree.insert(threeLevelsCase[0]);    // 50
+    tree.insert(threeLevelsCase[1]);    // 25
+    tree.insert(threeLevelsCase[2]);    // 75
+    tree.insert(threeLevelsCase[3]);    // 12
+    tree.insert(threeLevelsCase[1]);    // 25
+    tree.insert(threeLevelsCase[1]);    // 25
 
     EXPECT_EQ(6, tree.getCount());
+
+    ds::ArrayList<INT>* list = tree.toList(indorderTraverser);
+    EXPECT_EQ(12, list->get(0));
+    EXPECT_EQ(25, list->get(1));
+    EXPECT_EQ(25, list->get(2));
+    EXPECT_EQ(25, list->get(3));
+    EXPECT_EQ(50, list->get(4));
+    EXPECT_EQ(75, list->get(5));
 }
 
 TEST(_BinarySearchTreeTests, contains)

@@ -41,7 +41,10 @@ void ds::InorderTraverser<T>::addNode(ds::ArrayList<T> *list, const ds::TreeNode
         this->addNode(list, node->left);
     }
     // add root node
-    list->add(node->value);
+    for(INT i = 0; i < node->count; i++)
+    {
+        list->add(node->value);
+    }
     // add right branch
     if(node->rigt)
     {

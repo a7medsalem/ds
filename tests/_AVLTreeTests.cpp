@@ -124,3 +124,49 @@ TEST(_AVLTreeTests, add_left_right_to_second_degree)
     EXPECT_EQ(20, list[4]);
     EXPECT_EQ(40, list[5]);
 }
+
+
+
+TEST(_AVLTreeTests, remove_one_3_element_triangle_tree)
+{
+    ds::AVLTree<INT> tree;
+    //
+    tree.insert(20);
+    tree.insert(10);
+    tree.insert(30);
+    //
+    tree.removeOne(10);
+    //
+    EXPECT_EQ(2, tree.getCount());
+}
+
+TEST(_AVLTreeTests, remove_one_4_element_triangle_tree)
+{
+    ds::AVLTree<INT> tree;
+    //
+    tree.insert(20);
+    tree.insert(10);
+    tree.insert(30);
+    tree.insert(5);
+    //
+    tree.removeOne(5);
+    //
+    EXPECT_EQ(3, tree.getCount());
+}
+
+TEST(_AVLTreeTests, remove_one_to_unbalance)
+{
+    ds::AVLTree<INT> tree;
+    //
+    tree.insert(20);
+    tree.insert(10);
+    tree.insert(30);
+    tree.insert(5);
+    tree.insert(15);
+    tree.insert(45);
+    tree.insert(3);
+    //
+    tree.removeOne(45);
+    //
+    EXPECT_EQ(6, tree.getCount());
+}

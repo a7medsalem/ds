@@ -251,13 +251,18 @@ void ds::RedBlackTree<T>::insertNode(RedBlackTreeNode<T>* parent, RedBlackTreeNo
     }
     else
     {
-        if(this->comparer_(value, root->value) > 0)
+        INT compare = this->comparer_(value, root->value);
+        if(compare > 0)
         {
             this->insertNode(root, (ds::RedBlackTreeNode<T>*&)root->rigt, value);
         }
-        else
+        else if(compare < 0)
         {
             this->insertNode(root, (ds::RedBlackTreeNode<T>*&)root->left, value);
+        }
+        else
+        {
+            root->count++; return;
         }
     }
 

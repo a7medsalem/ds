@@ -10,6 +10,7 @@ namespace ds
     {
     public:
       T value;
+      INT count;
       TreeNode *left;
       TreeNode *rigt;
     public:
@@ -54,6 +55,7 @@ namespace ds
 template<typename T>
 ds::TreeNode<T>::TreeNode() : value()
 {
+    this->count = 1;
     this->left = NULL;
     this->rigt = NULL;
 }

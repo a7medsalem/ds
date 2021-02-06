@@ -18,6 +18,13 @@ namespace ds
         INT count_;
     private:
         void insertNode(AVLTreeNode<T>* &root, T value);
+        void balance(AVLTreeNode<T>* &node);
+        void rebalance(AVLTreeNode<T>* &node);
+        void removeNode(AVLTreeNode<T>* &node);
+        AVLTreeNode<T>*& findNode(AVLTreeNode<T>* &node, T value);
+        //
+        AVLTreeNode<T>*& getInorderPredecessor(AVLTreeNode<T>* &node);
+        INT updateNodeHeight(ds::AVLTreeNode<T>* node);
         void rigtRotate(AVLTreeNode<T>* &root);
         void rigtSwap(AVLTreeNode<T>* &root);
         void leftRotate(AVLTreeNode<T>* &root);
@@ -30,9 +37,9 @@ namespace ds
         ~AVLTree<T>();
     public:
         BOOLEAN insert(T value);
-        BOOLEAN contains();
-        BOOLEAN removeOne();
-        BOOLEAN removeAll();
+        BOOLEAN contains(T value);
+        BOOLEAN removeOne(T value);
+        BOOLEAN removeAll(T value);
 
         INT getCount();
         ArrayList<T>* toList(ITreeTraverser<T>* traverser);
@@ -75,6 +82,19 @@ template<typename T>
 ds::AVLTree<T>::~AVLTree()
 {
     // no thing to do here... yet
+}
+
+template<typename T>
+ds::AVLTreeNode<T>*& ds::AVLTree<T>::getInorderPredecessor(ds::AVLTreeNode<T>* &node)
+{
+    ds::TreeNode<T>* inorder = node->left;
+    if(!inorder->rigt) return (ds::AVLTreeNode<T>*&)node->left;
+
+    while(inorder->rigt->rigt)
+    {
+        inorder = inorder->rigt;
+    }
+    return (ds::AVLTreeNode<T>*&)inorder->rigt;
 }
 
 template<typename T>
@@ -133,57 +153,170 @@ void ds::AVLTree<T>::leftSwap(ds::AVLTreeNode<T>* &root)
 }
 
 template<typename T>
+INT ds::AVLTree<T>::getNodeHeight(ds::AVLTreeNode<T>* node)
+{
+    if(!node) return 0;
+    else
+    {
+        return node->height;
+    }
+}
+
+template<typename T>
+void ds::AVLTree<T>::balance(ds::AVLTreeNode<T>* &node)
+{
+    INT balanceFactor = this->getNodeHeight((ds::AVLTreeNode<T>*)node->rigt) - this->getNodeHeight((ds::AVLTreeNode<T>*)node->left);
+    if(balanceFactor > 1)
+    {
+        // right tree bigger than left one
+        if(this->getNodeHeight((ds::AVLTreeNode<T>*)node->rigt->rigt) >= this->getNodeHeight((ds::AVLTreeNode<T>*)node->rigt->left))
+        {
+                                        // right-right case
+            this->leftRotate(node);     // do left rotation
+        }
+        else
+        {
+                                        // right-left case
+            this->leftSwap(node);       // swap last two nodes
+            this->leftRotate(node);     // do left rotation
+        }
+        
+    }
+    else if(balanceFactor < -1)
+    {
+        // left tree bigger than right one
+        if(this->getNodeHeight((ds::AVLTreeNode<T>*)node->left->left) >= this->getNodeHeight((ds::AVLTreeNode<T>*)node->left->rigt))
+        {
+                                        // left-left case
+            this->rigtRotate(node);     // do right rotation
+        }
+        else
+        {
+                                        // left-right case
+            this->rigtSwap(node);       // swap last two nodes
+            this->rigtRotate(node);     // do right rotation
+        }
+    }
+
+    INT rh = getNodeHeight((ds::AVLTreeNode<T>*)node->rigt), lh = getNodeHeight((ds::AVLTreeNode<T>*)node->left);
+    node->height = (rh > lh ? rh : lh) + 1;
+}
+
+template<typename T>
 void ds::AVLTree<T>::insertNode(ds::AVLTreeNode<T>* &root, T value)
 {
     if(!root) root = new ds::AVLTreeNode<T>(value);
     else
     {
-        if(this->comparer_(value, root->value) > 0)
+        INT compare = this->comparer_(value, root->value);
+        if(compare > 0)
         {
             this->insertNode((ds::AVLTreeNode<T>*&)root->rigt, value);
         }
-        else
+        else if(compare < 0)
         {
             this->insertNode((ds::AVLTreeNode<T>*&)root->left, value);
         }
-    }
-    
-    INT balance = this->getNodeHeight((ds::AVLTreeNode<T>*)root->rigt) - this->getNodeHeight((ds::AVLTreeNode<T>*)root->left);
-    if(balance > 1)
-    {
-        // right tree bigger than left one
-        if(this->getNodeHeight((ds::AVLTreeNode<T>*)root->rigt->rigt) >= this->getNodeHeight((ds::AVLTreeNode<T>*)root->rigt->left))
-        {
-                                        // right-right case
-            this->leftRotate(root);     // do left rotation
-        }
         else
         {
-                                        // right-left case
-            this->leftSwap(root);       // swap last two nodes
-            this->leftRotate(root);     // do left rotation
+            root->count++; return;
         }
-        
     }
-    else if(balance < -1)
-    {
-        // left tree bigger than right one
-        if(this->getNodeHeight((ds::AVLTreeNode<T>*)root->left->left) >= this->getNodeHeight((ds::AVLTreeNode<T>*)root->left->rigt))
-        {
-                                        // left-left case
-            this->rigtRotate(root);     // do right rotation
-        }
-        else
-        {
-                                        // left-right case
-            this->rigtSwap(root);       // swap last two nodes
-            this->rigtRotate(root);     // do right rotation
-        }
-        
-    }
+    //
+    this->balance(root);
+}
 
-    INT rh = getNodeHeight((ds::AVLTreeNode<T>*)root->rigt), lh = getNodeHeight((ds::AVLTreeNode<T>*)root->left);
-    root->height = (rh > lh ? rh : lh) + 1;
+template<typename T>
+ds::AVLTreeNode<T>*& ds::AVLTree<T>::findNode(ds::AVLTreeNode<T>* &node, T value)
+{
+    if(node == NULL) return node;
+
+    INT compareResult = this->comparer_(value, node->value);
+    //
+    if(compareResult == 0)
+    {
+        return node;
+    }
+    else if(compareResult > 0)
+    {
+        return this->findNode((ds::AVLTreeNode<T>*&)node->rigt, value);
+    }
+    else
+    {
+        return this->findNode((ds::AVLTreeNode<T>*&)node->left, value);
+    }
+}
+
+template<typename T>
+INT ds::AVLTree<T>::updateNodeHeight(ds::AVLTreeNode<T>* node)
+{
+    if(!node) return 0;
+    //
+    if(!node->left && !node->rigt)
+    {
+        return node->height = 1;
+    }
+    else
+    {
+        INT rh = updateNodeHeight((ds::AVLTreeNode<T>*)node->rigt), lh = updateNodeHeight((ds::AVLTreeNode<T>*)node->left);
+        return node->height = (rh > lh ? rh : lh) + 1;
+    }
+}
+
+template<typename T>
+void ds::AVLTree<T>::removeNode(ds::AVLTreeNode<T>* &node)
+{
+    // if node has two children
+    if(node->left && node->rigt)
+    {
+        ds::AVLTreeNode<T>* temp = node;
+        ds::AVLTreeNode<T>*& predecessor = this->getInorderPredecessor(node);
+        if(predecessor == node->left)
+        {
+            predecessor->rigt = node->rigt;
+            node = (ds::AVLTreeNode<T>*)node->left;
+        }
+        else
+        {
+            ds::AVLTreeNode<T>*& preLeft = (ds::AVLTreeNode<T>*&)predecessor->left;
+            predecessor->left = node->left;
+            predecessor->rigt = node->rigt;
+            node = predecessor;
+            //
+            predecessor = preLeft;
+        }
+        
+        delete temp;
+    }
+    // if node has one child
+    else if(node->left)
+    {
+        ds::AVLTreeNode<T>* temp = node;
+        node = (ds::AVLTreeNode<T>*)node->left;
+        delete temp;
+    }
+    else if(node->rigt)
+    {
+        ds::AVLTreeNode<T>* temp = node;
+        node = (ds::AVLTreeNode<T>*)node->rigt;
+        delete temp;
+    }
+    // if node has no children
+    else
+    {
+        delete node;
+        node = NULL;
+    }
+}
+
+template<typename T>
+void ds::AVLTree<T>::rebalance(ds::AVLTreeNode<T>*& node)
+{
+    if(!node) return;
+    if(node->left) this->rebalance((ds::AVLTreeNode<T>*&)node->left);
+    if(node->rigt) this->rebalance((ds::AVLTreeNode<T>*&)node->rigt);
+    //
+    this->balance(node);
 }
 
 template<typename T>
@@ -196,13 +329,58 @@ BOOLEAN ds::AVLTree<T>::insert(T value)
 }
 
 template<typename T>
-INT ds::AVLTree<T>::getNodeHeight(ds::AVLTreeNode<T>* node)
+BOOLEAN ds::AVLTree<T>::contains(T value)
 {
-    if(!node) return 0;
+    return this->findNode(this->root_, value) != NULL;
+}
+
+template<typename T>
+BOOLEAN ds::AVLTree<T>::removeOne(T value)
+{
+    ds::AVLTreeNode<T>*& node = this->findNode(this->root_, value);
+    if(node != NULL)
+    {
+        if(node->count > 1)
+        {
+            node->count--;
+        }
+        else
+        {
+            this->removeNode(node);
+            this->rebalance(this->root_);
+        }
+        
+        this->count_--;
+        return TRUE;
+    }
     else
     {
-        return node->height;
+        return FALSE;
     }
+}
+
+template<typename T>
+BOOLEAN ds::AVLTree<T>::removeAll(T value)
+{
+    ds::AVLTreeNode<T>*& node = this->findNode(this->root_, value);
+    if(node != NULL)
+    {
+        this->count_ -= node->count;
+        this->removeNode(node);
+        this->rebalance(this->root_);
+        //
+        return TRUE;
+    }
+    else
+    {
+        return FALSE;
+    }
+}
+
+template<typename T>
+INT ds::AVLTree<T>::getCount()
+{
+    return this->count_;
 }
 
 template<typename T>
