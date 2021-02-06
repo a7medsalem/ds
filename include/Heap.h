@@ -1,3 +1,10 @@
+/*****************************************************************/
+/*                                                               */
+/*   Implementation of Max/Min Heap using linear dynamic array   */
+/*                      by. Ahmed Salem                          */
+/*                                                               */
+/*****************************************************************/
+
 #ifndef _HEAP_H
 #define _HEAP_H
 
