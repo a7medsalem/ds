@@ -24,13 +24,11 @@ namespace ds
         AVLTreeNode<T>*& findNode(AVLTreeNode<T>* &node, T value);
         //
         AVLTreeNode<T>*& getInorderPredecessor(AVLTreeNode<T>* &node);
-        INT updateNodeHeight(ds::AVLTreeNode<T>* node);
         void rigtRotate(AVLTreeNode<T>* &root);
         void rigtSwap(AVLTreeNode<T>* &root);
         void leftRotate(AVLTreeNode<T>* &root);
         void leftSwap(AVLTreeNode<T>* &root);
         INT getNodeHeight(AVLTreeNode<T>* node);
-        INT setNodeHeight(AVLTreeNode<T>* node);
     public:
         AVLTree<T>();
         AVLTree<T>(std::function<INT(T,T)> comparer);
@@ -244,22 +242,6 @@ ds::AVLTreeNode<T>*& ds::AVLTree<T>::findNode(ds::AVLTreeNode<T>* &node, T value
     else
     {
         return this->findNode((ds::AVLTreeNode<T>*&)node->left, value);
-    }
-}
-
-template<typename T>
-INT ds::AVLTree<T>::updateNodeHeight(ds::AVLTreeNode<T>* node)
-{
-    if(!node) return 0;
-    //
-    if(!node->left && !node->rigt)
-    {
-        return node->height = 1;
-    }
-    else
-    {
-        INT rh = updateNodeHeight((ds::AVLTreeNode<T>*)node->rigt), lh = updateNodeHeight((ds::AVLTreeNode<T>*)node->left);
-        return node->height = (rh > lh ? rh : lh) + 1;
     }
 }
 
