@@ -1,41 +1,44 @@
-Data Structures
+# Data Structures
 
 
-# You have to clone googletest project to build this project succesfully.
+## Installation
+You have to clone googletest project to build this project succesfully.
+```git
 git clone https://github.com/google/googletest.git
+```
 
+* Notes for testing\
+--gtest_filter=SUIT_CASE.\*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: run all tests in SUIT_CASE\
+--gtest_filter=SUIT_CASE.*-SUIT_CASE.TEST   : run all tests in SUIT_CASE except SUIT_CASE.TEST\
+--gtest_filter=-*WORD*&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: run all tests except tests contains WORD
 
-* Notes for testing 
---gtest_filter=SUIT_CASE.*                  : run all tests in SUIT_CASE
---gtest_filter=SUIT_CASE.*-SUIT_CASE.TEST   : run all tests in SUIT_CASE except SUIT_CASE.TEST
---gtest_filter=-*WORD*                      : run all tests except tests contains WORD
+<br/>
+<br/>
 
+## Contents
 
-
-
-# Contents
-
-* ArrayList
-* LinkedList
-* DoubleLinkedList
-* HashTable
-* Heap
+* [ArrayList](/include/ArrayList.h)
+* [LinkedList](/include/LinkedList.h)
+* [DoublyLinkedList](/include/DoublyLinkedList.h)
+* [HashTable](/include/HashTable.h)
+* [Heap](/include/Heap.h)
     - Max heap
     - Min heap
-* Queue
-* Stack
-* PriorityQueue
-* Trie
-
+* [Queue](/include/Queue.h)
+* [Stack](/include/Stack.h)
+* [PriorityQueue](/include/PriorityQueue.h)
+* [Trie](/include/Trie.h)
 * Tree
-    - BinarySearchTree
-    - AVLTree
-    - RedBlackTree
+    - [BinarySearchTree](/include/BinarySearchTree.h)
+    - [AVLTree](/include/AVLTree.h)
+    - [RedBlackTree](/include/RedBlackTree.h)
 
 
 
+<br/>
+<br/>
 
-# Functionality
+## Functionalities
 
 * ArrayList { Linear Structure - Dynamic Size - Indexed[] } : IString, ICollection
     - add(item)                         // tested
@@ -96,5 +99,9 @@ git clone https://github.com/google/googletest.git
     - set(index, item)
 
 
+
+
+## License
+[MIT](https://choosealicense.com/licenses/mit/)
 
 
